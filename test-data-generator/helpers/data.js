@@ -1,4 +1,5 @@
 const { sourceObsCodes, sourceAssertRefs, sourceCodeComponents, sourceAssertNames, sourceAssertLocations } = require("../resources/mocks");
+import { faker } from '@faker-js/faker';
 const uuid = require("uuid");
 const latitude = Math.random() * 180 - 90;
 const longitude = Math.random() * 360 - 180;
@@ -44,6 +45,60 @@ const generateObsEvent = (integrationAccountRef) => {
     phenEndTime: date.toISOString(),
     spatialExtent: `{\"type\": \"Point\", \"coordinates\": [${latitude}, ${longitude}]}`,
     modified: date.getTime(),
+  };
+};
+
+const generateObsInvalidEvent = (integrationAccountRef) => {
+  const obsCode = sourceObsCodes.sample();
+  let date = randomDate();
+  let valueField = generateRandomValue(obsCode.code);
+  let assertRefSample = sourceAssertRefs.sample();
+  let codeComponentsSample = getrandomComponents();
+  return {
+    codeComponents: codeComponentsSample,
+    valueUoM: obsCode.defaultUoMCode,
+    value: valueField,
+    id: uuid.v4(),
+    parentCollectionRef: uuid.v4(),
+    integrationAccountRef: integrationAccountRef,
+    assetRef: assertRefSample.assetRef,
+    status: "ACTIVE",
+    xMin: latitude,
+    xMax: latitude,
+    yMin: longitude,
+    yMax: longitude,
+    phenTime: date.toISOString(),
+    phenEndTime: date.toISOString(),
+    spatialExtent: `{\"type\": \"Point\", \"coordinates\": [${latitude}, ${longitude}]}`,
+    modified: date.getTime(),
+  };
+};
+
+const generateObsEventWithAddFields = (integrationAccountRef) => {
+  const obsCode = sourceObsCodes.sample();
+  let date = randomDate();
+  let valueField = generateRandomValue(obsCode.code);
+  let assertRefSample = sourceAssertRefs.sample();
+  let codeComponentsSample = getrandomComponents();
+  return {
+    obsCode: obsCode.code,
+    codeComponents: codeComponentsSample,
+    valueUoM: obsCode.defaultUoMCode,
+    value: valueField,
+    id: uuid.v4(),
+    parentCollectionRef: uuid.v4(),
+    integrationAccountRef: integrationAccountRef,
+    assetRef: assertRefSample.assetRef,
+    status: "ACTIVE",
+    xMin: latitude,
+    xMax: latitude,
+    yMin: longitude,
+    yMax: longitude,
+    phenTime: date.toISOString(),
+    phenEndTime: date.toISOString(),
+    spatialExtent: `{\"type\": \"Point\", \"coordinates\": [${latitude}, ${longitude}]}`,
+    modified: date.getTime(),
+    fieldId: faker.random.alphaNumeric,
   };
 };
 
