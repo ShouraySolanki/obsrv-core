@@ -1,4 +1,6 @@
 var axios = require("axios");
+var fs = require('fs').promises;
+var os = require("os");
 require("dotenv").config();
 
 const sendRequest = ({ body, headers = {} }) => {
@@ -16,6 +18,13 @@ const sendRequest = ({ body, headers = {} }) => {
     data: data,
   };
   return axios(config);
+
+  // return fs.appendFile("test.json", JSON.stringify(body, 0) + os.EOL, 'utf8');
 };
 
-module.exports = { sendRequest };
+const writeToFile = ({ body, headers = {} }) => {
+
+  return fs.appendFile("test.json", JSON.stringify(body, 0) + os.EOL, 'utf8');
+};
+
+module.exports = { sendRequest, writeToFile };

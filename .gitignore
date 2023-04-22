@@ -5,3 +5,4 @@ dependency-reduced-pom.xml
 .idea
 .classpath
 *.DS_Store
+package-lock.json
