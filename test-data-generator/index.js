@@ -17,7 +17,7 @@ const pushBatchEvents = (eventsCount, type) => {
   //   let obsCollectionEvent = []
   let obsEventArray = [];
 
-  eventsCount.forEach((f) => {
+  for (let i = 0; i < eventsCount; i++) {
     switch (type) {
       case "invalid":
         obsEventArray.push(generateObsInvalidEvent(INTEGRATION_ACCOUNT_REF.sample()));
@@ -29,7 +29,7 @@ const pushBatchEvents = (eventsCount, type) => {
         obsEventArray.push(generateObsEvent(INTEGRATION_ACCOUNT_REF.sample()));
         break;
     }
-  });
+  };
 
   let body = undefined;
   switch (type) {
@@ -47,7 +47,7 @@ const pushBatchEvents = (eventsCount, type) => {
       duplicateBatchIds.push(body.id);
       break;
     case "duplicate":
-      body = { id: duplicateBatchIds.pop, events: obsEventArray };
+      body = { id: duplicateBatchIds.pop(), events: obsEventArray };
       break;
     default:
       body = { id: uuid.v4(), events: obsEventArray };
@@ -74,44 +74,46 @@ const pushBatchData = async (totalBatches) => {
     invalidEventsKeyCount = totalBatches / 10,
     missingBatchIdCount = totalBatches / 10;
 
-  const validBatchCount = totalBatches - (duplicateBatchCount + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
+  const validBatchCount = totalBatches - ((duplicateBatchCount * 2) + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
 
+  console.log(duplicateBatchCount * 2, invalidSchemaCount, addFieldsCount, invalidEventsKeyCount, missingBatchIdCount, validBatchCount)
+  let promises = []
   //1. 20 batch events with 100 records
-  for (i = 0; i < duplicateBatchCount; i++) {
-    await Promise.all(pushBatchEvents(100, "record-ids-for-duplicate-test"));
+  for (let i = 0; i < duplicateBatchCount; i++) {
+    promises.push(pushBatchEvents(100, "record-ids-for-duplicate-test"));
   }
-  for (i = 0; i < validBatchCount; i++) {
-    await Promise.all(pushBatchEvents(100, "valid"));
+  for (let i = 0; i < validBatchCount; i++) {
+    promises.push(pushBatchEvents(100, "valid"));
   }
-
+  
   //2. 1 batch record with 100 records each with invalid schema
-  for (i = 0; i < invalidSchemaCount; i++) {
-    await Promise.all(pushBatchEvents(100, "invalid"));
+  for (let i = 0; i < invalidSchemaCount; i++) {
+    promises.push(pushBatchEvents(100, "invalid"));
   }
 
   //1 batch record with 100 records with additional fields
-  for (i = 0; i < addFieldsCount; i++) {
-    await Promise.all(pushBatchEvents(100, "additional-fields"));
+  for (let i = 0; i < addFieldsCount; i++) {
+    promises.push(pushBatchEvents(100, "additional-fields"));
   }
 
   // 4 batch records with no "dataset" id
   // TODO: Unable to test now as dataset_id is hardcoded in the URL
 
   // 6 batch records with no "events"/invalid key
-  for (i = 0; i < invalidEventsKeyCount; i++) {
-    await Promise.all(pushBatchEvents(100, "incorrect-events-key"));
+  for (let i = 0; i < invalidEventsKeyCount; i++) {
+    promises.push(pushBatchEvents(100, "incorrect-events-key"));
   }
 
   // 5 batch records with no batch id
-  for (i = 0; i < missingBatchIdCount; i++) {
-    await Promise.all(pushBatchEvents(100, "missing-batch-id"));
+  for (let i = 0; i < missingBatchIdCount; i++) {
+    promises.push(pushBatchEvents(100, "missing-batch-id"));
   }
 
   // 10 batch records with duplicate batch id
-  for (i = 0; i < duplicateBatchCount; i++) {
-    await Promise.all(pushBatchEvents(100, "duplicate"));
+  for (let i = 0; i < duplicateBatchCount; i++) {
+    promises.push(pushBatchEvents(100, "duplicate"));
   }
-
+  await Promise.all(promises)
   const endTime = Date.now();
   console.log("Time Taken to push batch data", endTime - startTime);
   console.log("Success Count", successCount);

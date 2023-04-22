@@ -1,5 +1,6 @@
+const { faker } = require('@faker-js/faker');
 const { sourceObsCodes, sourceAssertRefs, sourceCodeComponents, sourceAssertNames, sourceAssertLocations } = require("../resources/mocks");
-import { faker } from '@faker-js/faker';
+
 const uuid = require("uuid");
 const latitude = Math.random() * 180 - 90;
 const longitude = Math.random() * 360 - 180;
@@ -98,7 +99,7 @@ const generateObsEventWithAddFields = (integrationAccountRef) => {
     phenEndTime: date.toISOString(),
     spatialExtent: `{\"type\": \"Point\", \"coordinates\": [${latitude}, ${longitude}]}`,
     modified: date.getTime(),
-    fieldId: faker.random.alphaNumeric,
+    field: faker.random.alphaNumeric(),
   };
 };
 
@@ -140,88 +141,4 @@ function getrandomComponents() {
   return codeComponents;
 }
 
-const generateCollectionEvent = (integrationAccountRef) => {
-  let date = randomDate();
-  return {
-    obsCode: "E_AIR_TEMPERATURE",
-    codeComponents: [
-      {
-        componentCode: "CC_METADATA_DEVICE_FIRMWARE_VER",
-        componentType: "METADATA_DEVICE",
-        selector: "FIRMWARE_VERSION",
-        value: "2.3",
-      },
-      {
-        componentCode: "CC_AGG_TIME_DURATION",
-        componentType: "AGG_TIME_WINDOW",
-        selector: "DURATION",
-        value: "0",
-        valueUoM: "sec",
-      },
-      {
-        componentCode: "CC_METADATA_HAS_IRRIGATION",
-        componentType: "METADATA",
-        selector: "HAS_IRRIGATION",
-        value: "False",
-      },
-      {
-        componentCode: "CC_METADATA_PLOT_NUMBER",
-        componentType: "METADATA",
-        selector: "PLOT_NUMBER",
-        value: "402",
-      },
-      {
-        componentCode: "CC_METADATA_SOIL_PREPARATION",
-        componentType: "METADATA",
-        selector: "SOIL_PREPARATION",
-        value: "TILLAGE_CONVENTIONAL",
-      },
-      {
-        componentCode: "CC_FOI_CROP_VARIETY_NAME",
-        componentType: "FEATURE_OF_INTEREST",
-        selector: "CROP_VARIETY_NAME",
-        value: "Extase",
-      },
-      {
-        componentCode: "CC_METADATA_TRIAL_EXPERIMENTAL_DESIGN",
-        componentType: "METADATA",
-        selector: "TRIAL_EXPERIMENTAL_DESIGN",
-        value: "UNKNOWN",
-      },
-      {
-        componentCode: "CC_METADATA_TRIAL_NAME",
-        componentType: "METADATA",
-        selector: "TRIAL_NAME",
-        value: "CHLA705-2021",
-      },
-      {
-        componentCode: "CC_METADATA_TRIAL_TRIALIST_EMAIL_ADDRESS",
-        componentType: "METADATA",
-        selector: "TRIAL_TRIALIST_EMAIL",
-        value: "loic.motry@syngenta.com",
-      },
-      {
-        componentCode: "CC_METADATA_TRIAL_TRIALIST_NAME",
-        componentType: "METADATA",
-        selector: "TRIAL_TRIALIST_NAME",
-        value: "Motry LoÃ¯c",
-      },
-    ],
-    phenTime: date.toISOString(),
-    valueUoM: "mm",
-    value: "10",
-    id: id,
-    parentCollectionRef: "fa07ea66-4983-11ed-ac33-22507eed123e111",
-    integrationAccountRef: integrationAccountRef,
-    assetRef: "a80886ac-60d9-5520-ba6e-4b844110759c111",
-    contextItems: [{ code: "SYN_SYSTEM", value: "VALENCO" }],
-    status: "ACTIVE",
-    xMin: latitude,
-    xMax: latitude,
-    yMin: longitude,
-    yMax: longitude,
-    spatialExtent: `{\"type\": \"Point\", \"coordinates\": [${latitude}, ${longitude}]}`,
-  };
-};
-
-module.exports = { generateObsEvent, generateCollectionEvent, generateMasterEvents, generateObsInvalidEvent, generateObsEventWithAddFields };
+module.exports = { generateObsEvent, generateMasterEvents, generateObsInvalidEvent, generateObsEventWithAddFields };
