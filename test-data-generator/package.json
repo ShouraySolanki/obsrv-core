@@ -14,5 +14,8 @@
     "dotenv": "^16.0.3",
     "fs": "0.0.1-security",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0"
   }
 }
