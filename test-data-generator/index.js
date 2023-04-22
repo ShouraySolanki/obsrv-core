@@ -1,4 +1,4 @@
-const { sendRequest } = require("./helpers/api");
+const { sendRequest, writeToFile } = require("./helpers/api");
 const uuid = require("uuid");
 const fs = require("fs");
 const { generateObsEvent, generateObsEventWithAddFields, generateObsInvalidEvent, generateMasterEvents } = require("./helpers/data");
@@ -14,7 +14,6 @@ Array.prototype.sample = function () {
 let jsonData = [];
 
 const pushBatchEvents = (eventsCount, type) => {
-  //   let obsCollectionEvent = []
   let obsEventArray = [];
 
   for (let i = 0; i < eventsCount; i++) {
@@ -29,7 +28,7 @@ const pushBatchEvents = (eventsCount, type) => {
         obsEventArray.push(generateObsEvent(INTEGRATION_ACCOUNT_REF.sample()));
         break;
     }
-  };
+  }
 
   let body = undefined;
   switch (type) {
@@ -74,10 +73,10 @@ const pushBatchData = async (totalBatches) => {
     invalidEventsKeyCount = totalBatches / 10,
     missingBatchIdCount = totalBatches / 10;
 
-  const validBatchCount = totalBatches - ((duplicateBatchCount * 2) + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
+  const validBatchCount = totalBatches - (duplicateBatchCount * 2 + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
 
-  console.log(duplicateBatchCount * 2, invalidSchemaCount, addFieldsCount, invalidEventsKeyCount, missingBatchIdCount, validBatchCount)
-  let promises = []
+  console.log(duplicateBatchCount * 2, invalidSchemaCount, addFieldsCount, invalidEventsKeyCount, missingBatchIdCount, validBatchCount);
+  let promises = [];
   //1. 20 batch events with 100 records
   for (let i = 0; i < duplicateBatchCount; i++) {
     promises.push(pushBatchEvents(100, "record-ids-for-duplicate-test"));
@@ -85,7 +84,7 @@ const pushBatchData = async (totalBatches) => {
   for (let i = 0; i < validBatchCount; i++) {
     promises.push(pushBatchEvents(100, "valid"));
   }
-  
+
   //2. 1 batch record with 100 records each with invalid schema
   for (let i = 0; i < invalidSchemaCount; i++) {
     promises.push(pushBatchEvents(100, "invalid"));
@@ -113,11 +112,16 @@ const pushBatchData = async (totalBatches) => {
   for (let i = 0; i < duplicateBatchCount; i++) {
     promises.push(pushBatchEvents(100, "duplicate"));
   }
-  await Promise.all(promises)
+  await Promise.all(promises);
   const endTime = Date.now();
   console.log("Time Taken to push batch data", endTime - startTime);
   console.log("Success Count", successCount);
   console.log("Failed Count", failedCount);
+
+  console.log("Valid Events Count", (duplicateBatchCount + validBatchCount + addFieldsCount + missingBatchIdCount) * 100);
+  console.log("Duplicate Batch Events Count", duplicateBatchCount);
+  console.log("InValid Events Count", invalidSchemaCount * 100);
+  console.log("Invalid Batch Events Count", invalidEventsKeyCount * 100);
 };
 
 (async function () {
