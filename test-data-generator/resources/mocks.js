@@ -2132,27 +2132,13 @@ const sourceAssertRefs = [
 ];
 const INTEGRATION_ACCOUNT_REF = [
   "c5e02fb5-b5c5-41ec-af3a-4d743de794d7_99b9de9f-059a-4d56-bd18-33a5a55c8ddc111",
-  "ef22eb29-f9c9-4e31-9e45-7b641bbcf45e_8b71997f-20dc-41a5-a364-b5c47f5bb5f2111",
-  "3c3c4be4-4d91-4b99-9fc3-8fc3deaa204b_52c57677-2b34-46cb-82d3-7b59f9ab41c9111",
-  "2f80d19c-6b05-46b8-aa31-60307c42bb3d_c0483e8d-b030-442d-9042-2e989e6638d7111",
-  "f58044b9-1a07-4832-9d75-7b28cb6b3168_2931ec6c-7e32-4d71-b68a-1fbbd4c7b25f111",
-  "c0f97cc5-9447-4e9b-b5c5-5cd5d5c3b3f4_04a4a4d5-b4f9-4162-bf19-0545dc5a5c5b111",
-  "6794e4d4-99b4-47da-a9a9-4c3dd3bdc5e5_5d5e5c5d-c563-46c1-b7a1-547a70d8e234111",
-  "04e7dc9e-2591-4d2c-a95c-d6821e0cf023_e41e57af-066e-4cd9-bfdd-1d8b2a906109111",
-  "aa4fc4d8-3ab5-4ce5-9f5f-09f8f1f246a3_c59283da-d36c-4d67-bc68-13bc39a9ce54111",
-  "3f61fadb-21cb-43c1-92d2-c2a49a2697f1_767f68f8-77d5-4aa6-bc25-8ebfe5c5e196111",
-  "34f3b1e4-2d60-43c2-aa2a-c77c813ca4ab_5279df9b-5f8b-4f62-9d03-97c43d72b95c111",
-  "eaef1e9e-99b8-49c6-92a7-14a3fb3d8b3e_320c2fc9-9e1b-4a16-8ec5-3b3cb1683d3b111",
-  "e64c02eb-9a58-40a8-b921-17f25f30d0a6_127319b8-315c-4211-9f2b-99f472064912111",
-  "971c7abf-b19c-4d98-8a96-df7e44e54b0e_89a8be77-0425-4ef5-9471-9c8cbf5aa828111",
-  "34491cf7-3582-4b47-a6e2-6a4c6a4d4b1a_41ef3e3d-413c-4d44-a074-6a2a6c357d6d111",
-  "23a6be3b-7f43-4e5d-bc5e-efb0d9c44f70_882c61d6-ee91-4787-8e2d-7c88fc05dd18111",
-  "d2e64012-7f38-43df-8f52-8dbbfcf1dcd3_3e853d96-46e9-444c-a0e2-e2f96c624d1e111",
-  "v2d64012-7f38-43df-8f52-8dbbfcf1dcd3_3e853d96-46e9-444c-a0e2-e2f96c624d1e111",
-  "c225dc1b-3259-470f-8bb6-d7a74a54b61e_77aebdb3-7e3e-4d9a-bb04-8e509a159b21111",
-  "7c8d04f4-fc4a-4e72-9d4e-259fc6f23ca3_c3e6b3a6-8f6a-43c5-bcf9-9a3875dc5ce2111",
-  "83a6c173-42e2-4bc5-864e-9f8b47f56234_45d19096-ecb6-4b30-bfa7-96dcb6f2ba6b111",
+  "ef22eb29-f9c9-4e31-9e45-7b641bbcf45e_8b71997f-20dc-41a5-a364-b5c47f5bb5f2112",
+  "3c3c4be4-4d91-4b99-9fc3-8fc3deaa204b_52c57677-2b34-46cb-82d3-7b59f9ab41c9113",
+  "2f80d19c-6b05-46b8-aa31-60307c42bb3d_c0483e8d-b030-442d-9042-2e989e6638d7114",
+  "f58044b9-1a07-4832-9d75-7b28cb6b3168_2931ec6c-7e32-4d71-b68a-1fbbd4c7b25f115",
+  "c0f97cc5-9447-4e9b-b5c5-5cd5d5c3b3f4_04a4a4d5-b4f9-4162-bf19-0545dc5a5c5b116",
 ];
+
 const sourceCodeComponents = [
   {
     componentCode: "CC_FOI_CROP",
@@ -2312,6 +2298,16 @@ const sourceCodeComponents = [
     value: "True",
   },
 ];
+
+const providerMeta = [
+  { id: "c5e02fb5-b5c5-41ec-af3a-4d743de794d7_99b9de9f-059a-4d56-bd18-33a5a55c8ddc111", code: "SYN_SYSTEM", value: "PESSL" },
+  { id: "ef22eb29-f9c9-4e31-9e45-7b641bbcf45e_8b71997f-20dc-41a5-a364-b5c47f5bb5f2112", code: "SYN_SYSTEM", value: "ARABLE" },
+  { id: "3c3c4be4-4d91-4b99-9fc3-8fc3deaa204b_52c57677-2b34-46cb-82d3-7b59f9ab41c9113", code: "SYN_SYSTEM", value: "SENCORP" },
+  { id: "2f80d19c-6b05-46b8-aa31-60307c42bb3d_c0483e8d-b030-442d-9042-2e989e6638d7114", code: "SYN_SYSTEM", value: "TRAPVIEW" },
+  { id: "f58044b9-1a07-4832-9d75-7b28cb6b3168_2931ec6c-7e32-4d71-b68a-1fbbd4c7b25f115", code: "SYN_SYSTEM", value: "VALENCO" },
+  { id: "c0f97cc5-9447-4e9b-b5c5-5cd5d5c3b3f4_04a4a4d5-b4f9-4162-bf19-0545dc5a5c5b116", code: "SYN_SYSTEM", value: "SPHINX" }
+];
+
 const sourceAssertNames = [
   "IOT Device",
   "Rainfall Gauge",
@@ -2339,6 +2335,7 @@ const sourceAssertNames = [
   "Thermocouple",
   "Flow Sensor",
 ];
+
 const sourceAssertLocations = [
   "Japan",
   "Germany",
@@ -2367,4 +2364,4 @@ const sourceAssertLocations = [
   "Malaysia",
 ];
 
-module.exports = { sourceObsCodes, sourceAssertRefs, INTEGRATION_ACCOUNT_REF, sourceCodeComponents, sourceAssertNames, sourceAssertLocations };
+module.exports = { sourceObsCodes, sourceAssertRefs, INTEGRATION_ACCOUNT_REF, sourceCodeComponents, sourceAssertNames, sourceAssertLocations, providerMeta };

@@ -1,7 +1,9 @@
 const { generateMasterEvents } = require("./helpers/data");
 const { sendRequest } = require("./helpers/api");
 
-const data = generateMasterEvents();
+// providers - integrationAccountRefs
+// assets - assetRefs
+const data = generateMasterEvents("assets");
 let successCount = 0,
   failedCount = 0;
 
