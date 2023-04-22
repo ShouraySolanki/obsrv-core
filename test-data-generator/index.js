@@ -4,8 +4,9 @@ const fs = require("fs");
 const { generateObsEvent, generateObsEventWithAddFields, generateObsInvalidEvent, generateMasterEvents } = require("./helpers/data");
 const { INTEGRATION_ACCOUNT_REF } = require("./resources/mocks");
 
-let successCount = 0, failedCount = 0;
-let duplicateBatchIds = []
+let successCount = 0,
+  failedCount = 0;
+let duplicateBatchIds = [];
 
 Array.prototype.sample = function () {
   return this[Math.floor(Math.random() * this.length)];
@@ -17,7 +18,7 @@ const pushBatchEvents = (eventsCount, type) => {
   let obsEventArray = [];
 
   eventsCount.forEach((f) => {
-    switch(type) {
+    switch (type) {
       case "invalid":
         obsEventArray.push(generateObsInvalidEvent(INTEGRATION_ACCOUNT_REF.sample()));
         break;
@@ -31,7 +32,7 @@ const pushBatchEvents = (eventsCount, type) => {
   });
 
   let body = undefined;
-  switch(type) {
+  switch (type) {
     case "empty-dataset":
       body = { id: uuid.v4(), events: obsEventArray };
       break;
@@ -43,7 +44,7 @@ const pushBatchEvents = (eventsCount, type) => {
       break;
     case "record-ids-for-duplicate-test":
       body = { id: uuid.v4(), events: obsEventArray };
-      duplicateBatchIds.push(body.id)
+      duplicateBatchIds.push(body.id);
       break;
     case "duplicate":
       body = { id: duplicateBatchIds.pop, events: obsEventArray };
@@ -65,45 +66,64 @@ const pushBatchEvents = (eventsCount, type) => {
     });
 };
 
-(async function () {
+const pushBatchData = async (totalBatches) => {
   const startTime = Date.now();
+  const duplicateBatchCount = totalBatches / 10,
+    invalidSchemaCount = totalBatches / 25,
+    addFieldsCount = totalBatches / 25, //
+    invalidEventsKeyCount = totalBatches / 10,
+    missingBatchIdCount = totalBatches / 10;
 
+  const validBatchCount = totalBatches - (duplicateBatchCount + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
 
   //1. 20 batch events with 100 records
-  for(i=0; i < 10; i++) {
-    await Promise.all(pushBatchEvents(100, 'record-ids-for-duplicate-test'));
+  for (i = 0; i < duplicateBatchCount; i++) {
+    await Promise.all(pushBatchEvents(100, "record-ids-for-duplicate-test"));
   }
-  for(i=0; i < 10; i++) {
-    await Promise.all(pushBatchEvents(100, 'valid'));
+  for (i = 0; i < validBatchCount; i++) {
+    await Promise.all(pushBatchEvents(100, "valid"));
   }
 
   //2. 1 batch record with 100 records each with invalid schema
-  await Promise.all(pushBatchEvents(100, 'invalid'));
+  for (i = 0; i < invalidSchemaCount; i++) {
+    await Promise.all(pushBatchEvents(100, "invalid"));
+  }
 
   //1 batch record with 100 records with additional fields
-  await Promise.all(pushBatchEvents(100, 'additional-fields'));
+  for (i = 0; i < addFieldsCount; i++) {
+    await Promise.all(pushBatchEvents(100, "additional-fields"));
+  }
 
   // 4 batch records with no "dataset" id
   // TODO: Unable to test now as dataset_id is hardcoded in the URL
 
   // 6 batch records with no "events"/invalid key
-  for(i=0; i < 6; i++) {
-    await Promise.all(pushBatchEvents(100, 'incorrect-events-key'));
+  for (i = 0; i < invalidEventsKeyCount; i++) {
+    await Promise.all(pushBatchEvents(100, "incorrect-events-key"));
   }
 
   // 5 batch records with no batch id
-  for(i=0; i < 5; i++) {
-    await Promise.all(pushBatchEvents(100, 'missing-batch-id'));
+  for (i = 0; i < missingBatchIdCount; i++) {
+    await Promise.all(pushBatchEvents(100, "missing-batch-id"));
   }
 
   // 10 batch records with duplicate batch id
-  for(i=0; i < 10; i++) {
-    await Promise.all(pushBatchEvents(100, 'duplicate'));
+  for (i = 0; i < duplicateBatchCount; i++) {
+    await Promise.all(pushBatchEvents(100, "duplicate"));
   }
 
   const endTime = Date.now();
-  console.log("Time Taken", endTime - startTime);
+  console.log("Time Taken to push batch data", endTime - startTime);
   console.log("Success Count", successCount);
   console.log("Failed Count", failedCount);
-  generateMasterEvents();
+};
+
+(async function () {
+  // Push data to functionally test the pipeline
+  pushBatchData(50); // Push 50 batches = 5k events
+
+  // Push data to mini benchmark the pipeline
+  // pushBatchData(10000) // Push 10k batches = 1M events
+  // pushBatchData(100000) // Push 100k batches = 10M events
+  // pushBatchData(1000000) // Push 1M batches = 100M events
 })();

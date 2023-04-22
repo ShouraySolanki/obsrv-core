@@ -224,4 +224,4 @@ const generateCollectionEvent = (integrationAccountRef) => {
   };
 };
 
-module.exports = { generateObsEvent, generateCollectionEvent, generateMasterEvents };
+module.exports = { generateObsEvent, generateCollectionEvent, generateMasterEvents, generateObsInvalidEvent, generateObsEventWithAddFields };
