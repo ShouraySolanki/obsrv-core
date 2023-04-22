@@ -1,5 +1,5 @@
 const { faker } = require('@faker-js/faker');
-const { sourceObsCodes, sourceAssertRefs, sourceCodeComponents, sourceAssertNames, sourceAssertLocations } = require("../resources/mocks");
+const { sourceObsCodes, sourceAssertRefs, sourceCodeComponents, sourceAssertNames, sourceAssertLocations, providerMeta } = require("../resources/mocks");
 
 const uuid = require("uuid");
 const latitude = Math.random() * 180 - 90;
@@ -103,13 +103,24 @@ const generateObsEventWithAddFields = (integrationAccountRef) => {
   };
 };
 
-const generateMasterEvents = () => {
+const generateMasterEvents = (id) => {
+  switch (id) {
+    case "assets": return generateAssetMasterEvents();
+    case "providers": return generateProviderMasterEvents();
+    default: return;
+  }
+}
+
+const generateAssetMasterEvents = () => {
   let masterEvents = [];
   for (i = 0; i < 100; i++) {
     masterEvents.push({ id: sourceAssertRefs[i].assetRef, assetName: sourceAssertNames.sample(), assetLocation: sourceAssertLocations.sample() });
   }
-  fs.writeFileSync("./resources/master-events.json", JSON.stringify(masterEvents));
   return masterEvents;
+};
+
+const generateProviderMasterEvents = () => {
+  return providerMeta;
 };
 
 function generateRandomValue(code) {

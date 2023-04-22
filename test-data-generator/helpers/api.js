@@ -10,7 +10,7 @@ const sendRequest = ({ body, headers = {} }) => {
 
   var config = {
     method: "post",
-    url: "http://localhost:8999/obsrv/v1/data/arundhati-choopu",
+    url: "http://localhost:8999/obsrv/v1/data/batch-observations",
     headers: {
       "Content-Type": "application/json",
       ...headers,
@@ -18,7 +18,6 @@ const sendRequest = ({ body, headers = {} }) => {
     data: data,
   };
   return axios(config);
-
   // return fs.appendFile("test.json", JSON.stringify(body, 0) + os.EOL, 'utf8');
 };
 
