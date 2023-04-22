@@ -10,7 +10,7 @@ function randomDate() {
   function randomValueBetween(min, max) {
     return Math.random() * (max - min) + min;
   }
-  var date1 = date1 || "01-01-2022";
+  var date1 = date1 || "2023-03-25";
   var date2 = date2 || "2023-04-01";
   date1 = new Date(date1).getTime();
   date2 = new Date(date2).getTime();
