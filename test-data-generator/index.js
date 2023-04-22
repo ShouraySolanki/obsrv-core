@@ -121,7 +121,7 @@ const pushBatchData = async (totalBatches) => {
   console.log("Valid Events Count", (duplicateBatchCount + validBatchCount + addFieldsCount + missingBatchIdCount) * 100);
   console.log("Duplicate Batch Events Count", duplicateBatchCount);
   console.log("InValid Events Count", invalidSchemaCount * 100);
-  console.log("Invalid Batch Events Count", invalidEventsKeyCount * 100);
+  console.log("Invalid Batch Events Count", invalidEventsKeyCount);
 };
 
 (async function () {
