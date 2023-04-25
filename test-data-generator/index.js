@@ -1,11 +1,15 @@
-const { sendRequest } = require("./helpers/api");
+const { sendRequest, sendEvents } = require("./helpers/api");
 const uuid = require("uuid");
 const fs = require("fs");
 const { generateObsEvent, generateObsEventWithAddFields, generateObsInvalidEvent, generateMasterEvents } = require("./helpers/data");
 const { INTEGRATION_ACCOUNT_REF } = require("./resources/mocks");
-const async = require('async')
+const async = require("async");
+const _ = require("lodash");
 
-let successCount = 0, failedCount = 0, successBatchCount = 0, failedBatchCount = 0;
+let successCount = 0,
+  failedCount = 0,
+  successBatchCount = 0,
+  failedBatchCount = 0;
 let duplicateBatchIds = [];
 
 Array.prototype.sample = function () {
@@ -51,34 +55,48 @@ const pushBatchEvents = (eventsCount, type) => {
       break;
   }
 
-  return sendRequest({ body })
-    .then((res) => {
-      successCount++;
-      console.log(`Success ${successCount}`);
-    })
-    .catch((error) => {
-      failedCount++;
-      console.log(`Failure ${failedCount}`);
-    });
+  return () =>
+    // sendRequest({ body })
+    sendEvents({body})
+      .then((res) => {
+        successCount++;
+        console.log(`Success ${successCount}`);
+      })
+      .catch((error) => {
+        failedCount++;
+        console.log(`Failure ${failedCount}`);
+      });
 };
 
 const makeAsyncBatchCalls = (promises, limit) => {
-
-  const tasks = promises.map(promise => (cb) => {
+  const tasks = promises.map((promise) => (cb) => {
     return promise
-      .then(response => {
+      .then((response) => {
         cb(null, response);
       })
-      .catch(err => {
+      .catch((err) => {
         cb(err, null);
-      })
-  })
+      });
+  });
 
-  return async.parallelLimit(tasks, limit)
-}
+  return async.parallelLimit(tasks, limit);
+};
+
+const makeAsyncBatchCallsv2 = (tasks) => {
+  // Define the batch size and concurrency limit
+
+  return async.eachLimit(tasks, 10, async (batch) => {
+    try {
+      await batch();
+    } catch (error) {
+      console.log(error);
+    }
+  });
+};
 
 const pushBatchData = async (totalBatches) => {
   const startTime = Date.now();
+  console.log(`Start time - ${startTime}`);
   const duplicateBatchCount = totalBatches / 10,
     invalidSchemaCount = totalBatches / 25,
     addFieldsCount = totalBatches / 25, //
@@ -86,7 +104,6 @@ const pushBatchData = async (totalBatches) => {
     missingBatchIdCount = totalBatches / 10;
 
   const validBatchCount = totalBatches - (duplicateBatchCount * 2 + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
-
   console.log(duplicateBatchCount * 2, invalidSchemaCount, addFieldsCount, invalidEventsKeyCount, missingBatchIdCount, validBatchCount);
   let promises = [];
   //1. 20 batch events with 100 records
@@ -125,17 +142,17 @@ const pushBatchData = async (totalBatches) => {
     promises.push(pushBatchEvents(100, "duplicate"));
   }
 
-  return makeAsyncBatchCalls(promises, 50)
-    .finally(() => {
-      const endTime = Date.now();
-      console.log("Time Taken to push batch data", endTime - startTime);
-      console.log("Success Count", successCount);
-      console.log("Failed Count", failedCount);
-      console.log("Valid Events Count", (duplicateBatchCount + validBatchCount + addFieldsCount + missingBatchIdCount) * 100);
-      console.log("Duplicate Batch Events Count", duplicateBatchCount);
-      console.log("InValid Events Count", invalidSchemaCount * 100);
-      console.log("Invalid Batch Events Count", invalidEventsKeyCount);
-    });
+  return makeAsyncBatchCallsv2(promises, 50).finally(() => {
+    const endTime = Date.now();
+    console.log(`End time - ${endTime}`);
+    console.log("Time Taken to push batch data", endTime - startTime);
+    console.log("Success Count", successCount);
+    console.log("Failed Count", failedCount);
+    console.log("Valid Events Count", (duplicateBatchCount + validBatchCount + addFieldsCount + missingBatchIdCount) * 100);
+    console.log("Duplicate Batch Events Count", duplicateBatchCount);
+    console.log("InValid Events Count", invalidSchemaCount * 100);
+    console.log("Invalid Batch Events Count", invalidEventsKeyCount);
+  });
 };
 
 (async function () {
@@ -143,7 +160,7 @@ const pushBatchData = async (totalBatches) => {
   // await pushBatchData(50); // Push 50 batches = 5k events
 
   // Push data to mini benchmark the pipeline
-  pushBatchData(10000) // Push 10k batches = 1M events
-  // pushBatchData(100000) // Push 100k batches = 10M events
+  // pushBatchData(10000) // Push 10k batches = 1M events
+  pushBatchData(1); // Push 100k batches = 10M events
   // pushBatchData(1000000) // Push 1M batches = 100M events
 })();
