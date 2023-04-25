@@ -34,6 +34,7 @@ const kafka = new Kafka({
 });
 
 const sendEvents = async (message) => {
+  message.body.dataset = "observatios-transformed"
   if (!message.body.mid) message.body.mid = uuid.v1();
   message.body.syncts = new Date().getTime();
   const producer = kafka.producer({
