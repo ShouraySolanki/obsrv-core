@@ -7,8 +7,8 @@ require("dotenv").config();
 
 const sendRequest = ({ body, headers = {} }) => {
   var data = {
-    "data": body
-  }
+    data: body,
+  };
 
   var config = {
     method: "post",
@@ -34,23 +34,19 @@ const kafka = new Kafka({
 });
 
 const sendEvents = async (message) => {
-  try {
-    if (!message.body.mid) message.body.mid = uuid.v1();
-    message.body.syncts = new Date().getTime();
-    const producer = kafka.producer({
-      compression: "snappy",
-    });
+  if (!message.body.mid) message.body.mid = uuid.v1();
+  message.body.syncts = new Date().getTime();
+  const producer = kafka.producer({
+    compression: "snappy",
+  });
 
-    await producer.connect();
-    await producer.send({
-      topic: "dev.ingest",
-      messages: [{ value: JSON.stringify(message.body) }],
-    });
+  await producer.connect();
+  await producer.send({
+    topic: "dev.ingest",
+    messages: [{ value: JSON.stringify(message.body) }],
+  });
 
-    await producer.disconnect();
-  } catch (error) {
-    console.log(error);
-  }
+  await producer.disconnect();
 };
 
 const writeToFile = ({ body, headers = {} }) => {
