@@ -13,20 +13,12 @@ export const datasetRead = ({ datasetId, config = {} }: any) => {
     })
 }
 
-export const generateIngestionSpec = ({ data, config }: any) => {
-    return http.post(apiEndpoints.generateIngestionSpec, data, config);
-}
-
 export const saveTransformations = async (payload: any) => {
     return http.post(`${apiEndpoints.transformationsConfig}`, payload);
 }
 
 export const sendEvents = (datasetId: string | undefined, payload: any) => {
     return http.post(`${apiEndpoints.sendEvents}/${datasetId}`, payload, {});
-}
-
-export const saveConnectorDraft = async (payload: any) => {
-    return http.post(`${apiEndpoints.datasetSourceConfig}`, payload);
 }
 
 export const updateDenormConfig = async (denormPayload: any) => {
@@ -39,4 +31,8 @@ export const createMasterDataset = (payload: Record<string, any>) => {
 
 export const createDataset = (payload: Record<string, any>) => {
     return saveDataset({ data: payload, config: {} });
+}
+
+export const saveDatasource = ({ data, config }: any) => {
+    return http.post(apiEndpoints.saveDatasource, data, config);
 }
