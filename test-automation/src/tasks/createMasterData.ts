@@ -1,12 +1,17 @@
 import masterDatasetPayload from '../data/requestPayload/masterDataset';
-import { createMasterDataset } from '../services/dataset';
+import masterDatasourcePayload from '../data/requestPayload/masterDatasource';
+import { createMasterDataset, saveDatasource } from '../services/dataset';
+
+const observationDatasetPayload = masterDatasetPayload.observations;
+const observationDatasourcePayload = masterDatasourcePayload.observations
 
 export default {
     index: 1,
     name: 'createMasterDataset',
     handler: (payloadFromPreviousTasks: Record<string, any>) => {
         return async () => {
-            return createMasterDataset(masterDatasetPayload);
+            await createMasterDataset(observationDatasetPayload);
+            await saveDatasource(observationDatasourcePayload);
         }
     }
 };
