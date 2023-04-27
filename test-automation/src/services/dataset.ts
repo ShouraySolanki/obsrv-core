@@ -36,3 +36,7 @@ export const createDataset = (payload: Record<string, any>) => {
 export const saveDatasource = ({ data, config }: any) => {
     return http.post(apiEndpoints.saveDatasource, data, config);
 }
+
+export const publishDataset = ({ data, config }: any) => {
+    return http.post(apiEndpoints.publishDataset, data, config);
+}
