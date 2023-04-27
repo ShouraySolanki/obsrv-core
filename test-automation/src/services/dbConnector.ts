@@ -8,10 +8,10 @@ export const createTables = async () => {
         const sqlQuery: string = Object.values(tableSqlObject)[0];
         try {
             await sequelize.query(sqlQuery);
-            console.log(`Table ${tableName} created successfully`);
+            return true;
         } catch (err) {
             console.error(`Failed to create table ${tableName}: ${err}`);
-        } finally {
+            throw err;
         }
     }
     sequelize.close()
