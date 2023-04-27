@@ -1,4 +1,9 @@
+import tasks from './tasks';
 
-const initialise = () => {
+(async () => {
+    const pushEvents = tasks.get("pushEventsToDataset");
+    if(pushEvents) {
+        pushEvents.handler({})();
+    }
 
-}
+})()

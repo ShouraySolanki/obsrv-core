@@ -2,7 +2,7 @@
 import * as _ from 'lodash';
 import http from 'axios';
 import apiEndpoints from '../data/apiEndpoints';
-
+import { observationsMasterDataset } from '../tasks/pushEventsToMasterDataset';
 const saveDataset = ({ data = {}, config, master }: any) => {
     return http.post(apiEndpoints.saveDatset, data, config);
 }
@@ -17,8 +17,8 @@ export const saveTransformations = async (payload: any) => {
     return http.post(`${apiEndpoints.transformationsConfig}`, payload);
 }
 
-export const sendEvents = (datasetId: string | undefined, payload: any) => {
-    return http.post(`${apiEndpoints.sendEvents}/${datasetId}`, payload, {});
+export const sendEvents = async (payload: any) => {
+    return await http.post(`${apiEndpoints.sendEvents}/${observationsMasterDataset}`, { "data": payload }, {});
 }
 
 export const updateDenormConfig = async (denormPayload: any) => {
