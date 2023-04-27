@@ -1,9 +1,16 @@
-import datasourceIngestionSpec from '../json-schema/datasource';
+import ingestionSpecs from '../ingestion_spec/dataset';
+const observationIngestionSpec = ingestionSpecs.observations
 
 export default {
-    "dataset_id": "observations-transformed.1",
-    "ingestion_spec": datasourceIngestionSpec,
-    "datasource": "observations-transformed.1_DAY",
-    "datasource_ref": "observations-transformed.1_DAY",
-    "status": "DRAFT"
+    "observations": {
+        "dataset_id": "observations-transformed.1",
+        "ingestion_spec": observationIngestionSpec,
+        "datasource": "observations-transformed.1_DAY",
+        "datasource_ref": "observations-transformed.1_DAY",
+        "retention_period": { "enabled": "false" },
+        "archival_policy": { "enabled": "false" },
+        "purge_policy": { "enabled": "false" },
+        "backup_config": { "enabled": "false" },
+        "status": "DRAFT"
+    }
 }

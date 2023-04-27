@@ -11,7 +11,7 @@ export default {
     handler: (payloadFromPreviousTasks: Record<string, any>) => {
         return async () => {
             await createMasterDataset(observationDatasetPayload);
-            await saveDatasource(observationDatasourcePayload);
+            await saveDatasource({ data: observationDatasourcePayload, config: {} });
         }
     }
 };
