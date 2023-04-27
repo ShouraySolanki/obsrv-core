@@ -4,7 +4,7 @@ export default {
     name: 'createTables',
     handler: (payloadFromPreviousTasks: Record<string, any>) => {
         return async () => {
-            await createTables()
+            return createTables()
         }
     }
 }
