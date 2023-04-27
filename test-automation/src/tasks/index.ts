@@ -6,8 +6,8 @@ const tasks = scrapModules<ITask>(__dirname, path.basename(__filename));
 
 export default tasks;
 
-
 /*
+Tasks
     1 - create required tables in postgres.
     2 - create dataset/masterdata-(sample data, json schema, dataset, ingestionSpec, datasource)
     3	add connector, add denorm, transformations
