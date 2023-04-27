@@ -11,6 +11,7 @@ export default {
         "retention_period": { "enabled": "false" },
         "archival_policy": { "enabled": "false" },
         "purge_policy": { "enabled": "false" },
-        "backup_config": { "enabled": "false" }
+        "backup_config": { "enabled": "false" },
+        "status": "DRAFT"
     }
 }
