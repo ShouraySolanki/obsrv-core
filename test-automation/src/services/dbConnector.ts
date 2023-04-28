@@ -22,6 +22,6 @@ export const createTables = async () => {
         return true;
     } catch (err) {
         console.error(`Failed to create tables: ${err}`);
-        throw err;
+        // throw err;
     }
 }
