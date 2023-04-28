@@ -8,6 +8,6 @@ export default {
     publishDataset: "/system/dataset/command",
     druidNativeQuery: "/obsrv/v1/query",
     s3Upload: "/config/obsrv/v1/file/upload",
-    datasetSourceConfig: "/config/obsrv/v1/datasets/source/config",
-    transformationsConfig: "/config/obsrv/v1/datasets/transformation"
+    datasetSourceConfig: "/obsrv/v1/datasets/source/config",
+    transformationsConfig: "/obsrv/v1/datasets/transformation"
 }

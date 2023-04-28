@@ -1,10 +1,11 @@
 const uuid = require("uuid");
 const fs = require("fs");
-const { generateObsEvent, generateObsEventWithAddFields, generateObsInvalidEvent, generateMasterEvents } = require("./dataGenerator");
-const { INTEGRATION_ACCOUNT_REF } = require("../data/event-generate/obsMeta");
+const { generateObsEvent, generateObsEventWithAddFields, generateObsInvalidEvent, generateMasterEvents  } = require("./dataGenerator");
+const { INTEGRATION_ACCOUNT_REF, observationsDataset } = require("../data/event-generate/obsMeta");
 const { sendEvents } = require("../services/dataset");
 const async = require("async");
 const _ = require("lodash");
+console.log(observationsDataset)
 let successCount = 0,
   failedCount = 0,
   successBatchCount = 0,
@@ -54,7 +55,7 @@ const pushBatchEvents = (eventsCount, type) => {
       break;
   }
   return () =>
-    sendEvents(body)
+    sendEvents(observationsDataset, body)
       .then((res) => {
         successCount++;
         console.log(`Success ${successCount}`);
