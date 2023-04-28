@@ -4,6 +4,7 @@ const { sourceCodeComponents, sourceObsCodes, providerMeta } = require("../data/
 const uuid = require("uuid");
 const latitude = Math.random() * 180 - 90;
 const longitude = Math.random() * 360 - 180;
+const _ = require("lodash");
 const fs = require("fs");
 function randomDate() {
   function randomValueBetween(min, max) {
@@ -143,15 +144,20 @@ function generateRandomValue(code) {
   }
 }
 
+// function getrandomComponents() {
+//   const numItems = Math.floor(Math.random() * 5) + 1;
+//   const codeComponents = [];
+//   for (let i = 0; i < numItems; i++) {
+//     const randomIndex = Math.floor(Math.random() * sourceCodeComponents.length);
+//     codeComponents.push(sourceCodeComponents[randomIndex]);
+//     codeComponents.splice(randomIndex, 1);
+//   }
+//   return codeComponents;
+// }
 function getrandomComponents() {
   const numItems = Math.floor(Math.random() * 5) + 1;
-  const codeComponents = [];
-  for (let i = 0; i < numItems; i++) {
-    const randomIndex = Math.floor(Math.random() * sourceCodeComponents.length);
-    codeComponents.push(sourceCodeComponents[randomIndex]);
-    codeComponents.splice(randomIndex, 1);
-  }
-  return codeComponents;
+  const codeComponents = _.sampleSize(sourceCodeComponents, numItems);
+  return _.uniqBy(codeComponents, (component) => component.componentCode);
 }
 
 module.exports = { generateObsEvent, generateMasterEvents, generateObsInvalidEvent, generateObsEventWithAddFields };
