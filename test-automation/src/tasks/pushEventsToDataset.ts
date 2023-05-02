@@ -5,7 +5,7 @@ export default {
     name: 'pushEventsToDataset',
     handler: (payloadFromPreviousTasks: Record<string, any>) => {
         return async () => {
-            await pushObsEvents(1)
+            await pushObsEvents(100)
         }
     }
 }
