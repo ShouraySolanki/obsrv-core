@@ -1,5 +1,7 @@
 import { Kafka } from 'kafkajs'
 import _ from 'lodash'
+import { datasetTopics } from '../data/kafka-topics/topics'
+import fs from 'fs'
 
 interface JobCounts {
     successCount: number,
@@ -10,7 +12,7 @@ const kafka = new Kafka({
     brokers: ["localhost:9092"],
 })
 
-async function listTopics() {
+export async function listTopics() {
     try {
         const admin = kafka.admin()
         await admin.connect()
@@ -25,7 +27,7 @@ async function listTopics() {
         console.log(error)
     }
 }
-async function getTotalEventCount(topic: string): Promise<number> {
+export async function getEventCount(topic: string): Promise<number> {
     try {
         const admin = kafka.admin()
         await admin.connect()
@@ -39,7 +41,7 @@ async function getTotalEventCount(topic: string): Promise<number> {
     }
 }
 
-async function getEventById(topic: string, id: string) {
+export async function getEventById(topic: string, id: string) {
     const consumer = kafka.consumer({
         groupId: `consumer ${Math.random()}`
     })
@@ -55,25 +57,24 @@ async function getEventById(topic: string, id: string) {
             }
         })
     })
-
     const matchedEvent = await matchedEventPromise
     // await consumer.disconnect()
     return matchedEvent
 }
 
-async function main() {
+export async function getAllEventsCount() {
     const topics: any[] = await listTopics() || []
-    console.log("List of topics available in Kafka:", topics)
     const eventCounts: any = await Promise.all(
         topics.map(async (topic) => {
-            const count = await getTotalEventCount(topic)
+            const count = await getEventCount(topic)
             return { [topic]: count }
         })
     )
-    console.log("total events in each topic", eventCounts)
-     const matchedEvent = await getEventById("dev.ingest", "1ecca21b-2880-48a3-a5a6-da544d823c36")
-    !_.isUndefined(matchedEvent) ? console.log("event matched with id", matchedEvent) : console.log("no event matches with the id")
- }
-
-main()
- 
+    const mergedCounts = Object.assign({}, ...eventCounts)
+    const fetchedEventCounts: any = {}
+    for (var [alias, topic] of Object.entries(datasetTopics)) {
+        fetchedEventCounts[alias] = mergedCounts[topic]
+    }
+    fs.writeFileSync(__dirname + "/../data/event-generate/outputCounts.json", JSON.stringify(fetchedEventCounts));
+    return fetchedEventCounts
+}

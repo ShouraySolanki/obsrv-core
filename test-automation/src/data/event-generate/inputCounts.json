@@ -1,0 +1,1 @@
+{"totalBatches":100,"eventsInABatch":100,"duplicateBatches":10,"invalidSchemaEvents":400,"invalidBatches":10,"duplicateEventsCount":0,"failedDenormEvents":0,"failedTransformEvents":0,"totalEventsInIngest":10000,"validBatches":80,"totalEventsInRaw":8000,"totalEventsInUnique":7600,"totalEventsInDenorm":7600,"totalEventsInTransform":7600,"totalEventsInRouterTopic":7600}

@@ -1,5 +1,6 @@
 const uuid = require("uuid");
 const fs = require("fs");
+var os = require("os");
 const { generateObsEvent, generateObsEventWithAddFields, generateObsInvalidEvent, generateMasterEvents } = require("./dataGenerator");
 const { INTEGRATION_ACCOUNT_REF, observationsDataset } = require("../data/event-generate/obsMeta");
 const { sendEvents } = require("../services/dataset");
@@ -87,15 +88,9 @@ const pushBatchData = async (totalBatches) => {
     missingBatchIdCount = totalBatches / 10;
   const validBatchCount = totalBatches - (duplicateBatchCount * 2 + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
   console.log(duplicateBatchCount * 2, invalidSchemaCount, addFieldsCount, invalidEventsKeyCount, missingBatchIdCount, validBatchCount);
-  // let counts = {};
-  // counts.totalBatches = totalBatches,
-  // counts.duplicateBatchCount = duplicateBatchCount * 2,
-  // counts.invalidSchemaCount = invalidSchemaCount,
-  // counts.addFieldsCount = addFieldsCount,
-  // counts.invalidEventsKeyCount = invalidEventsKeyCount,
-  // counts.missingBatchIdCount = missingBatchIdCount,
-  // counts.validBatchCount = validBatchCount;
-  // fs.writeFileSync("./test.json", JSON.stringify({ "inputCounts": counts }));
+  let counts = {};
+  (counts.totalBatches = totalBatches), (counts.eventsInABatch = 100), (counts.duplicateBatches = duplicateBatchCount), (counts.invalidSchemaEvents = invalidSchemaCount * 100), (counts.invalidBatches = invalidEventsKeyCount), (counts.duplicateEventsCount = 0);
+  await setInputCounts(counts);
   let promises = [];
   //1. 20 batch events with 100 records
   for (let i = 0; i < duplicateBatchCount; i++) {
@@ -144,6 +139,20 @@ const pushBatchData = async (totalBatches) => {
     console.log("InValid Events Count", invalidSchemaCount * 100);
     console.log("Invalid Batch Events Count", invalidEventsKeyCount);
   });
+};
+
+const setInputCounts = async (counts) => {
+  const { totalBatches, duplicateBatches, invalidSchemaEvents, invalidBatches, eventsInABatch, duplicateEventsCount } = counts;
+  counts.failedDenormEvents = 0;
+  counts.failedTransformEvents = 0;
+  counts.totalEventsInIngest = totalBatches * eventsInABatch;
+  counts.validBatches = totalBatches - (duplicateBatches + invalidBatches);
+  counts.totalEventsInRaw = counts.validBatches * eventsInABatch;
+  counts.totalEventsInUnique = counts.totalEventsInRaw - (duplicateEventsCount + invalidSchemaEvents);
+  counts.totalEventsInDenorm = counts.totalEventsInUnique - counts.failedDenormEvents;
+  counts.totalEventsInTransform = counts.totalEventsInDenorm - counts.failedTransformEvents;
+  counts.totalEventsInRouterTopic = counts.totalEventsInTransform;
+  fs.writeFileSync(__dirname + "/../data/event-generate/inputCounts.json", JSON.stringify(counts));
 };
 
 const pushObsEvents = async (batchSize) => pushBatchData(batchSize);

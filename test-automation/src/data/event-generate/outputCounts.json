@@ -1,0 +1,13 @@
+{
+    "ingest": 0,
+    "raw": 0,
+    "extractor_failed": 0,
+    "extractor_duplicate": 0,
+    "unique": 0,
+    "duplicate": 0,
+    "invalid": 0,
+    "denorm": 0,
+    "denorm_failed": 0,
+    "transform": 0,
+    "transform_failed": 0
+}

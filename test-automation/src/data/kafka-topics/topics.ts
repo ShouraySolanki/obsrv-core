@@ -1,10 +1,9 @@
-const job_env = process.env.system_env || 'dev'
+const job_env = process.env.system_env || 'local'
 
 export const masterTopics = {
     ingest: `${job_env}.masterdata.ingest`,
     raw: `${job_env}.masterdata.raw`,
     extractor_failed: `${job_env}.masterdata.extractor.failed`,
-
     extractor_duplicate: `${job_env}.masterdata.extractor.duplicate`,
     unique: `${job_env}.masterdata.unique`,
     duplicate: `${job_env}.masterdata.duplicate`,
