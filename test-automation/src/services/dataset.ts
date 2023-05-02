@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 import axios from 'axios';
 import apiEndpoints from '../data/apiEndpoints';
 import config from '../config/index'
-import { observationsMasterDataset } from '../tasks/pushEventsToMasterDataset';
 
 const http = axios.create({ baseURL: config.OBS_API_SERVICE });
 
@@ -18,11 +17,11 @@ export const datasetRead = ({ datasetId, config = {} }: any) => {
 }
 
 export const saveTransformations = async (payload: any) => {
-    return http.post(`${apiEndpoints.transformationsConfig}`, payload);
+    return http.post(`${apiEndpoints.transformationsConfig}`, payload, {});
 }
 
-export const sendEvents = async (payload: any) => {
-    return await http.post(`${apiEndpoints.sendEvents}/${observationsMasterDataset}`, { "data": payload }, {});
+export const sendEvents = async (datasetId: string, payload: any) => {
+    return await http.post(`${apiEndpoints.sendEvents}/${datasetId}`, { "data": payload }, {});
 }
 
 export const updateDenormConfig = async (denormPayload: any) => {

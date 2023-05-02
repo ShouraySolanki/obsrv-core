@@ -33,22 +33,50 @@ const kafka = new Kafka({
   connectionTimeout: 5000,
 });
 
+const producer = kafka.producer({
+  compression: "snappy",
+});
+
 const sendEvents = async (message) => {
-  message.body.dataset = "observatios-transformed"
+  message.body.dataset = "observations-transformed"
   if (!message.body.mid) message.body.mid = uuid.v1();
   message.body.syncts = new Date().getTime();
-  const producer = kafka.producer({
-    compression: "snappy",
-  });
+  // const producer = kafka.producer({
+  //   compression: "snappy",
+  // });
 
   await producer.connect();
   await producer.send({
-    topic: "dev.ingest",
+    topic: "local.ingest",
     messages: [{ value: JSON.stringify(message.body) }],
-  });
-
-  await producer.disconnect();
+  }).catch(e => console.error(`[kafka-producer error: ] ${e.message}`, e));
+  // await producer.disconnect();
 };
+
+const errorTypes = ['unhandledRejection', 'uncaughtException']
+const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2']
+
+errorTypes.forEach(type => {
+  process.on(type, async () => {
+    try {
+      console.log(`process.on ${type}`)
+      await producer.disconnect()
+      process.exit(0)
+    } catch (_) {
+      process.exit(1)
+    }
+  })
+})
+
+signalTraps.forEach(type => {
+  process.once(type, async () => {
+    try {
+      await producer.disconnect()
+    } finally {
+      process.kill(process.pid, type)
+    }
+  })
+})
 
 const writeToFile = ({ body, headers = {} }) => {
   return fs.appendFile("test.json", JSON.stringify(body, 0) + os.EOL, "utf8");

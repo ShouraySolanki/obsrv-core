@@ -1,10 +1,12 @@
 const uuid = require("uuid");
 const fs = require("fs");
 const { generateObsEvent, generateObsEventWithAddFields, generateObsInvalidEvent, generateMasterEvents } = require("./dataGenerator");
-const { INTEGRATION_ACCOUNT_REF } = require("../data/event-generate/obsMeta");
+const { INTEGRATION_ACCOUNT_REF, observationsDataset } = require("../data/event-generate/obsMeta");
 const { sendEvents } = require("../services/dataset");
 const async = require("async");
 const _ = require("lodash");
+const { count } = require("console");
+console.log(observationsDataset);
 let successCount = 0,
   failedCount = 0,
   successBatchCount = 0,
@@ -54,7 +56,7 @@ const pushBatchEvents = (eventsCount, type) => {
       break;
   }
   return () =>
-    sendEvents(body)
+    sendEvents(observationsDataset, body)
       .then((res) => {
         successCount++;
         console.log(`Success ${successCount}`);
@@ -83,9 +85,17 @@ const pushBatchData = async (totalBatches) => {
     addFieldsCount = totalBatches / 25, //
     invalidEventsKeyCount = totalBatches / 10,
     missingBatchIdCount = totalBatches / 10;
-
   const validBatchCount = totalBatches - (duplicateBatchCount * 2 + invalidSchemaCount + addFieldsCount + invalidEventsKeyCount + missingBatchIdCount);
   console.log(duplicateBatchCount * 2, invalidSchemaCount, addFieldsCount, invalidEventsKeyCount, missingBatchIdCount, validBatchCount);
+  // let counts = {};
+  // counts.totalBatches = totalBatches,
+  // counts.duplicateBatchCount = duplicateBatchCount * 2,
+  // counts.invalidSchemaCount = invalidSchemaCount,
+  // counts.addFieldsCount = addFieldsCount,
+  // counts.invalidEventsKeyCount = invalidEventsKeyCount,
+  // counts.missingBatchIdCount = missingBatchIdCount,
+  // counts.validBatchCount = validBatchCount;
+  // fs.writeFileSync("./test.json", JSON.stringify({ "inputCounts": counts }));
   let promises = [];
   //1. 20 batch events with 100 records
   for (let i = 0; i < duplicateBatchCount; i++) {

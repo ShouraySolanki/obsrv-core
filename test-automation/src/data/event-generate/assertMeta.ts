@@ -84,5 +84,6 @@ export const assertMetaData = {
         "United Arab Emirates",
         "Colombia",
         "Malaysia",
-    ]
+    ],
+    "observations_dataset_master": "observations-assets"
 }
