@@ -1,8 +1,12 @@
 
 import * as _ from 'lodash';
-import http from 'axios';
+import axios from 'axios';
 import apiEndpoints from '../data/apiEndpoints';
+import config from '../config/index'
 import { observationsMasterDataset } from '../tasks/pushEventsToMasterDataset';
+
+const http = axios.create({ baseURL: config.OBS_API_SERVICE });
+
 const saveDataset = ({ data = {}, config, master }: any) => {
     return http.post(apiEndpoints.saveDatset, data, config);
 }

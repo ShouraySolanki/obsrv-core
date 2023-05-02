@@ -10,8 +10,8 @@ export default {
     name: 'createMasterDataset',
     handler: (payloadFromPreviousTasks: Record<string, any>) => {
         return async () => {
-            await createMasterDataset(observationDatasetPayload);
-            await saveDatasource({ data: observationDatasourcePayload, config: {} });
+            await createMasterDataset(observationDatasetPayload); await saveDatasource({ data: observationDatasourcePayload, config: {} }
+           );
         }
     }
 };
