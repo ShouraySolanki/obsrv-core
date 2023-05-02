@@ -57,7 +57,7 @@ const pushBatchEvents = (eventsCount, type) => {
 
   return () =>
     // sendRequest({ body })
-    sendEvents({body})
+    sendEvents({ body })
       .then((res) => {
         successCount++;
         console.log(`Success ${successCount}`);
@@ -109,37 +109,78 @@ const pushBatchData = async (totalBatches) => {
   //1. 20 batch events with 100 records
   for (let i = 0; i < duplicateBatchCount; i++) {
     promises.push(pushBatchEvents(100, "record-ids-for-duplicate-test"));
+    if (promises.length % 500 === 0) {
+      await makeAsyncBatchCallsv2(promises);
+      promises = [];
+    }
   }
+  await makeAsyncBatchCallsv2(promises);
+
+  promises = [];
   for (let i = 0; i < validBatchCount; i++) {
     promises.push(pushBatchEvents(100, "valid"));
+    if (promises.length % 1000 === 0) {
+      await makeAsyncBatchCallsv2(promises);
+      promises = [];
+    }
   }
+  await makeAsyncBatchCallsv2(promises);
 
   //2. 1 batch record with 100 records each with invalid schema
+  promises = [];
   for (let i = 0; i < invalidSchemaCount; i++) {
     promises.push(pushBatchEvents(100, "invalid"));
+    if (promises.length % 1000 === 0) {
+      await makeAsyncBatchCallsv2(promises);
+      promises = [];
+    }
   }
+  await makeAsyncBatchCallsv2(promises);
 
   //1 batch record with 100 records with additional fields
+  promises = [];
   for (let i = 0; i < addFieldsCount; i++) {
     promises.push(pushBatchEvents(100, "additional-fields"));
+    if (promises.length % 1000 === 0) {
+      await makeAsyncBatchCallsv2(promises);
+      promises = [];
+    }
   }
+  await makeAsyncBatchCallsv2(promises);
 
   // 4 batch records with no "dataset" id
   // TODO: Unable to test now as dataset_id is hardcoded in the URL
 
   // 6 batch records with no "events"/invalid key
+  promises = [];
   for (let i = 0; i < invalidEventsKeyCount; i++) {
     promises.push(pushBatchEvents(100, "incorrect-events-key"));
+    if (promises.length % 1000 === 0) {
+      await makeAsyncBatchCallsv2(promises);
+      promises = [];
+    }
   }
+  await makeAsyncBatchCallsv2(promises);
 
   // 5 batch records with no batch id
+  promises = [];
   for (let i = 0; i < missingBatchIdCount; i++) {
     promises.push(pushBatchEvents(100, "missing-batch-id"));
+    if (promises.length % 1000 === 0) {
+      await makeAsyncBatchCallsv2(promises);
+      promises = [];
+    }
   }
+  await makeAsyncBatchCallsv2(promises);
 
   // 10 batch records with duplicate batch id
+  promises = [];
   for (let i = 0; i < duplicateBatchCount; i++) {
     promises.push(pushBatchEvents(100, "duplicate"));
+    if (promises.length % 1000 === 0) {
+      await makeAsyncBatchCallsv2(promises);
+      promises = [];
+    }
   }
 
   return makeAsyncBatchCallsv2(promises, 50).finally(() => {
@@ -161,6 +202,6 @@ const pushBatchData = async (totalBatches) => {
 
   // Push data to mini benchmark the pipeline
   // pushBatchData(10000) // Push 10k batches = 1M events
-  pushBatchData(1); // Push 100k batches = 10M events
+  pushBatchData(100); // Push 100k batches = 10M events
   // pushBatchData(1000000) // Push 1M batches = 100M events
 })();

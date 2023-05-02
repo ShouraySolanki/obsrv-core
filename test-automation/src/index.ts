@@ -12,14 +12,20 @@ import tasks from './tasks';
             createTables.handler({})();
         } catch (error) {
             console.log(error);
+
+
         }
+
     }
     if (createMasterDataset) {
         try {
             createMasterDataset.handler({})();
         } catch (error) {
             console.log(error);
+
+
         }
+
     }
     if (createDataset) {
         try {
@@ -27,12 +33,16 @@ import tasks from './tasks';
         } catch (error) {
             console.log(error);
         }
+
     }
+
+
     if (pushEventsToMasterDataset) {
         try {
             pushEventsToMasterDataset.handler({})();
         } catch (error) {
             console.log(error);
+
         }
     }
     if (pushEventsToDataset) {
@@ -40,6 +50,10 @@ import tasks from './tasks';
             pushEventsToDataset.handler({})();
         } catch (error) {
             console.log(error);
+
+
         }
     }
+
+
 })()
