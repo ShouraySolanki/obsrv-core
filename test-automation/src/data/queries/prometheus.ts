@@ -1,0 +1,16 @@
+export const fetchMetricsQueries = {
+    extraction_batch: "sum_over_time(flink_taskmanager_job_task_operator_ExtractorJob_observations_transformed_success_extraction_count[30m])",
+    extraction_duplicate: "sum_over_time(flink_taskmanager_job_task_operator_ExtractorJob_observations_transformed_duplicate_extraction_count[30m])",
+    extraction_failed: "sum_over_time(flink_taskmanager_job_task_operator_ExtractorJob_observations_transformed_failed_extraction_count[30m])",
+    extracted_events: "sum_over_time(flink_taskmanager_job_task_operator_ExtractorJob_observations_transformed_success_event_count[30m])",
+    preprocessor_duplicate: "sum_over_time(flink_taskmanager_job_task_operator_PipelinePreprocessorJob_observations_transformed_duplicate_event_count[30m])",
+    preprocessor_invalid: "sum_over_time(flink_taskmanager_job_task_operator_PipelinePreprocessorJob_observations_transformed_validation_failed_event_count[30m])",
+    preprocessor_unique: "sum_over_time(flink_taskmanager_job_task_operator_PipelinePreprocessorJob_observations_transformed_duplicate_processed_event_count[30m])",
+    denorm_success: "sum_over_time(flink_taskmanager_job_task_operator_DenormalizerJob_observations_transformed_denorm_success[30m])",
+    denorm_failed: "sum_over_time(flink_taskmanager_job_task_operator_DenormalizerJob_observations_transformed_denorm_failed[30m])",
+    denorm_total: "sum_over_time(flink_taskmanager_job_task_operator_DenormalizerJob_observations_transformed_denorm_total[30m])",
+    transform_success: "sum_over_time(flink_taskmanager_job_task_operator_TransformerJob_observations_transformed_transform_success_count[30m])",
+    transform_failed: "sum_over_time(flink_taskmanager_job_task_operator_TransformerJob_observations_transformed_transform_failed_count[30m])",
+    transform_total: "sum_over_time(flink_taskmanager_job_task_operator_TransformerJob_observations_transformed_total_event_count[30m])",
+    router_success: "sum_over_time(flink_taskmanager_job_task_operator_DruidRouterJob_observations_transformed_router_success_count[30m])",
+}

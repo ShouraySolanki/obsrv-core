@@ -1,13 +1,1 @@
-{
-    "ingest": 0,
-    "raw": 0,
-    "extractor_failed": 0,
-    "extractor_duplicate": 0,
-    "unique": 0,
-    "duplicate": 0,
-    "invalid": 0,
-    "denorm": 0,
-    "denorm_failed": 0,
-    "transform": 0,
-    "transform_failed": 0
-}
+{"extraction_batch":70,"extraction_duplicate":10,"extraction_failed":10,"extracted_events":6973,"preprocessor_duplicate":0,"preprocessor_invalid":400,"preprocessor_unique":6551,"denorm_success":6568,"denorm_failed":0,"denorm_total":6537,"transform_success":6554,"transform_failed":0,"transform_total":6551,"router_success":6543}

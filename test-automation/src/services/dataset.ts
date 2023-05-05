@@ -43,3 +43,7 @@ export const saveDatasource = ({ data, config }: any) => {
 export const publishDataset = ({ data, config }: any) => {
     return http.post(apiEndpoints.publishDataset, data, config);
 }
+
+export const querySystemStats = (payload: any) => {
+    return http.post(apiEndpoints.druidNativeQuery, payload, {})
+}

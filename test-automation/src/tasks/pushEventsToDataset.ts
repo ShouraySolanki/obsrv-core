@@ -1,3 +1,4 @@
+
 const { pushObsEvents } = require('../utils/obs')
 export const batchSize = 100
 export default {

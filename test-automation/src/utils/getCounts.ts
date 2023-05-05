@@ -1,6 +1,9 @@
 import { Kafka } from 'kafkajs'
 import _ from 'lodash'
 import { datasetTopics } from '../data/kafka-topics/topics'
+import { querySystemStats } from '../services/dataset'
+import { queryStats } from '../data/queries/query-stats'
+import { assertMetaData } from '../data/event-generate/assertMeta'
 import fs from 'fs'
 
 interface JobCounts {
@@ -11,7 +14,8 @@ interface JobCounts {
 const kafka = new Kafka({
     brokers: ["localhost:9092"],
 })
-
+const transformTopic = datasetTopics.transform
+const assertRefList = assertMetaData.sourceAssertRefs
 export async function listTopics() {
     try {
         const admin = kafka.admin()
@@ -41,23 +45,26 @@ export async function getEventCount(topic: string): Promise<number> {
     }
 }
 
-export async function getEventById(topic: string, id: string) {
+export async function getEventById() {
     const consumer = kafka.consumer({
         groupId: `consumer ${Math.random()}`
     })
     await consumer.connect()
-    await consumer.subscribe({ topic, fromBeginning: true })
+    await consumer.subscribe({ topic: transformTopic, fromBeginning: true, })
     const matchedEventPromise = new Promise((resolve) => {
         consumer.run({
             eachMessage: async ({ topic, partition, message }) => {
+                console.log(message.value)
                 const event = JSON.parse(message.value?.toString() || "")
-                if (event.id === id) {
+                console.log(event)
+                if (event.assertRef === assertRefList[0].assetRef) {
                     resolve(event)
                 }
             }
         })
     })
     const matchedEvent = await matchedEventPromise
+    console.log(matchedEvent)
     // await consumer.disconnect()
     return matchedEvent
 }
@@ -75,6 +82,12 @@ export async function getAllEventsCount() {
     for (var [alias, topic] of Object.entries(datasetTopics)) {
         fetchedEventCounts[alias] = mergedCounts[topic]
     }
+    // fetchedEventCounts.druidSystemStats = await getSystemStatsCount()
     fs.writeFileSync(__dirname + "/../data/event-generate/outputCounts.json", JSON.stringify(fetchedEventCounts));
-    return fetchedEventCounts
+    return { mergedCounts, fetchedEventCounts }
+}
+
+export async function getSystemStatsCount() {
+    const response = await (await querySystemStats(queryStats)).data.result[0].result
+    return response.eventsCount
 }

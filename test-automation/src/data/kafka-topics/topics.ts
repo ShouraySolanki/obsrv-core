@@ -1,4 +1,5 @@
 const job_env = process.env.system_env || 'local'
+import { observationsDataset } from "../event-generate/obsMeta"
 
 export const masterTopics = {
     ingest: `${job_env}.masterdata.ingest`,
@@ -21,5 +22,7 @@ export const datasetTopics = {
     denorm: `${job_env}.denorm`,
     denorm_failed: `${job_env}.denorm.failed`,
     transform: `${job_env}.transform`,
-    transform_failed: `${job_env}.transform.failed`
+    transform_failed: `${job_env}.transform.failed`,
+    router: observationsDataset,
+    system_stats: `${job_env}.stats`
 }

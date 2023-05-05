@@ -7,7 +7,6 @@ const { sendEvents } = require("../services/dataset");
 const async = require("async");
 const _ = require("lodash");
 const { count } = require("console");
-console.log(observationsDataset);
 let successCount = 0,
   failedCount = 0,
   successBatchCount = 0,
