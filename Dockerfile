@@ -4,4 +4,4 @@ RUN mvn -f /app/pom.xml clean package -DskipTests
 
 FROM sanketikahub/flink:1.15.2-scala_2.12-java11
 USER flink
-COPY pipeline-merged-1.0.0.jar $FLINK_HOME/lib/
+COPY --from=build /app/pipeline/pipeline-merged/target/pipeline-merged-1.0.0.jar $FLINK_HOME/lib/
