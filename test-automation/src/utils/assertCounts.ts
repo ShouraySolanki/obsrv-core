@@ -1,8 +1,12 @@
-import inputCounts from '../data/event-generate/inputCounts.json'
+import inputCounts from '../reports/inputCounts.json'
 import chai from "chai";
 import * as _ from 'lodash'
 import { getMetrics } from './getMetrics';
 import { getAllEventsCount, getEventById } from './getCounts';
+import { previewTransformation } from './transfomation';
+import { transformFields } from '../data/transformation_functions/transformFields';
+import { datasetTopics } from '../data/kafka-topics/topics';
+import { maskField } from './maskFunction';
 import fs from 'fs';
 
 chai.should();
@@ -14,7 +18,7 @@ const assertionStages = [
             {
                 name: "prometheus: inputCountMatch",
                 description: "This test is to verify the ingested batch count",
-                assert: (input: any, metricOutput: any) => {
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
                     const expected = input.totalBatches
                     const actual = metricOutput.extraction_batch + metricOutput.extraction_duplicate + metricOutput.extraction_failed
                     const status = expected === actual;
@@ -280,6 +284,66 @@ const assertionStages = [
                     const status = expected === actual
                     return { expected, actual, status }
                 }
+            },
+            {
+                name: "kafka: validateTransformedEvent",
+                description: "This test is to verify the fields in kafka event after transform job - jsonata",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = topicOutput.transformEvent.jsonata1.expected
+                    const actual = topicOutput.transformEvent.jsonata1.actual
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
+            },
+            {
+                name: "kafka: validateTransformedEvent",
+                description: "This test is to verify the fields in kafka event after transform job - jsonata",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = topicOutput.transformEvent.jsonata2.expected
+                    const actual = topicOutput.transformEvent.jsonata2.actual
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
+            },
+            {
+                name: "kafka: validateTransformedEvent",
+                description: "This test is to verify the fields in kafka event after transform job - jsonata",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = topicOutput.transformEvent.jsonata3.expected
+                    const actual = topicOutput.transformEvent.jsonata3.actual
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
+            },
+            {
+                name: "kafka: validateTransformedEvent",
+                description: "This test is to verify the fields in kafka event after transform job - jsonata",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = topicOutput.transformEvent.jsonata4.expected
+                    const actual = topicOutput.transformEvent.jsonata4.actual
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
+            },
+            {
+                name: "kafka: validateTransformedEvent",
+                description: "This test is to verify the fields in kafka event after transform job - jsonata",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = topicOutput.transformEvent.jsonata5.expected
+                    const actual = topicOutput.transformEvent.jsonata5.actual
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
+            },
+            {
+                name: "kafka: validateTransformedEvent",
+                description: "This test is to verify the fields in kafka event after transform job - mask",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = topicOutput.transformEvent.mask.expected
+                    const actual = topicOutput.transformEvent.mask.actual
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
             }
         ]
     },
@@ -308,38 +372,54 @@ const assertionStages = [
             }
         ]
     },
-    // {
-    //     stage: "system-stats",
-    //     assertions: [
-    //         {
-    //             name: "system-stats: validTopicEventsCount",
-    //             description: "",
-    //             assert: (input: any, metricOutput: any, topicOutput: any) => {
-    //                 const expected = input.totalEventsInTransform
-    //                 const actual = topicOutput.druidSystemStats
-    //                 const status = expected === actual
-    //                 return { expected, actual, status }
-    //             }
-    //         }
-    //     ]
-    // }
+    {
+        stage: "system-stats",
+        assertions: [
+            {
+                name: "system-stats: validTopicEventsCount",
+                description: "",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = input.totalEventsInTransform
+                    const actual = topicOutput.druidSystemStats
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
+            }
+        ]
+    },
+    {
+        stage: "druid-ingestion",
+        assertions: [
+            {
+                name: "druid: RecordCount",
+                description: "",
+                assert: (input: any, metricOutput: any, topicOutput: any) => {
+                    const expected = input.totalEventsInTransform
+                    const actual = topicOutput.datasetRecordCount
+                    const status = expected === actual
+                    return { expected, actual, status }
+                }
+            }
+        ]
+    }
 ]
 
 
 export async function assertCounts() {
     try {
         const eventsCount = await getAllEventsCount()
-        const kafkaCounts = eventsCount.fetchedEventCounts;
+        let kafkaOutputs = eventsCount.fetchedEventCounts;
         const topicOffsets = eventsCount.mergedCounts;
         const prometheusMetrics = await getMetrics()
-        const matchedTransformEvent = await getEventById()
-        console.log(matchedTransformEvent, "matched transform event")
+        const matchedDenormEvent: any = await getEventById(datasetTopics.denorm)
+        const matchedTransformEvent: any = await getEventById(datasetTopics.transform)
+        Object.assign(kafkaOutputs, { "transformEvent": await validateTransforms(matchedTransformEvent, matchedDenormEvent) })
         const response = _.map(assertionStages, (assertionStage: Record<string, any>) => {
             const { stage, assertions } = assertionStage;
             const assertionStatus = _.map(assertions, assertion => ({
                 name: assertion.name,
                 description: assertion.description || "",
-                ...assertion.assert(inputCounts, prometheusMetrics, kafkaCounts)
+                ...assertion.assert(inputCounts, prometheusMetrics, kafkaOutputs)
             }))
 
             return {
@@ -361,14 +441,45 @@ export async function assertCounts() {
             return { passed, stages: testData };
         }
         const payload = {
+            ts: Date.now(),
             topicOffsets: topicOffsets,
             metricsSummary: prometheusMetrics,
             finalReport: report(response)
         }
-        fs.writeFileSync('./output.json', JSON.stringify(payload), 'utf-8');
+        fs.writeFileSync(__dirname + `/../reports/report.json`, JSON.stringify(payload), 'utf-8');
+        return true
     }
     catch (error: any) {
         console.error(error.message)
         return { isPassed: false, message: error.message }
     }
+}
+
+export async function validateTransforms(matchedTransformEvent: any, matchedDenormEvent: any) {
+    let result: any = {}
+    result.mask = {
+        "expected": maskField(matchedDenormEvent.spatialExtent),
+        "actual": matchedTransformEvent.spatialExtent
+    }
+    result.jsonata1 = {
+        "expected": await previewTransformation(transformFields.jsonata1.expression, matchedTransformEvent),
+        "actual": matchedTransformEvent[transformFields.jsonata1.outputField],
+    }
+    result.jsonata2 = {
+        "expected": await previewTransformation(transformFields.jsonata2.expression, matchedTransformEvent),
+        "actual": matchedTransformEvent[transformFields.jsonata2.outputField],
+    }
+    result.jsonata3 = {
+        "expected": await previewTransformation(transformFields.jsonata3.expression, matchedTransformEvent),
+        "actual": matchedTransformEvent[transformFields.jsonata3.outputField],
+    }
+    result.jsonata4 = {
+        "expected": await previewTransformation(transformFields.jsonata4.expression, matchedTransformEvent),
+        "actual": matchedTransformEvent[transformFields.jsonata4.outputField],
+    }
+    result.jsonata5 = {
+        "expected": JSON.stringify(await previewTransformation(transformFields.jsonata5.expression, matchedTransformEvent)),
+        "actual": JSON.stringify(matchedTransformEvent[transformFields.jsonata5.outputField]),
+    }
+    return result
 }

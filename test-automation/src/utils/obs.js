@@ -151,7 +151,7 @@ const setInputCounts = async (counts) => {
   counts.totalEventsInDenorm = counts.totalEventsInUnique - counts.failedDenormEvents;
   counts.totalEventsInTransform = counts.totalEventsInDenorm - counts.failedTransformEvents;
   counts.totalEventsInRouterTopic = counts.totalEventsInTransform;
-  fs.writeFileSync(__dirname + "/../data/event-generate/inputCounts.json", JSON.stringify(counts));
+  fs.writeFileSync(__dirname + "/../reports/inputCounts.json", JSON.stringify(counts));
 };
 
 const pushObsEvents = async (batchSize) => pushBatchData(batchSize);

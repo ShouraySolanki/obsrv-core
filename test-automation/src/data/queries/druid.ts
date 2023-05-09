@@ -1,5 +1,6 @@
 import { observationsDataset } from "../event-generate/obsMeta";
 import { lowerInterval, upperInterval } from "./intervals";
+const obsDatasource = "observations-transformed"
 export const queryStats = {
     "context": {
         "dataSource": "system-stats"
@@ -22,4 +23,17 @@ export const queryStats = {
             }
         ]
     }
+}
+export const obsDatasourceQuery = {
+    "queryType": "timeseries",
+    "dataSource": obsDatasource,
+    "intervals": `${lowerInterval}/${upperInterval}`,
+    "granularity": "all",
+    "aggregations": [
+        {
+            "type": "longSum",
+            "name": "eventsCount",
+            "fieldName": "count"
+        }
+    ]
 }

@@ -2,7 +2,6 @@ import tasks from './tasks';
 import { getAllEventsCount } from './utils/getCounts';
 
 (async () => {
-
     const createTables = tasks.get("createTables")
     const createMasterDataset = tasks.get("createMasterDataset");
     const createDataset = tasks.get("createDataset")
@@ -12,41 +11,41 @@ import { getAllEventsCount } from './utils/getCounts';
     const pushEventsToDataset = tasks.get("pushEventsToDataset")
     const assertCounts = tasks.get("assertCounts")
     const wait = tasks.get("wait")
-    // if (createMasterDataset) {
-    //     try {
-    //         await createMasterDataset.handler({})();
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-    // if (createDataset) {
-    //     try {
-    //         await createDataset.handler({})();
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-    // if (publishMasterDataset) {
-    //     try {
-    //         await publishMasterDataset.handler({})();
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-    // if (publishDataset) {
-    //     try {
-    //         await publishDataset.handler({})();
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-    // if (pushEventsToMasterDataset) {
-    //     try {
-    //         await pushEventsToMasterDataset.handler({})();
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    if (createMasterDataset) {
+        try {
+            await createMasterDataset.handler({})();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    if (createDataset) {
+        try {
+            await createDataset.handler({})();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    if (publishMasterDataset) {
+        try {
+            await publishMasterDataset.handler({})();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    if (publishDataset) {
+        try {
+            await publishDataset.handler({})();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    if (pushEventsToMasterDataset) {
+        try {
+            await pushEventsToMasterDataset.handler({})();
+        } catch (error) {
+            console.log(error);
+        }
+    }
     if (pushEventsToDataset) {
         try {
             await pushEventsToDataset.handler({})()
@@ -63,10 +62,10 @@ import { getAllEventsCount } from './utils/getCounts';
     }
     if (assertCounts) {
         try {
-            await getAllEventsCount()
-            await assertCounts.handler({})()
+            await assertCounts.handler({})();
         } catch (error) {
             console.log(error);
         }
     }
+    process.exit()
 })()
