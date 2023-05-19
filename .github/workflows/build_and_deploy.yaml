@@ -71,7 +71,7 @@ jobs:
           AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
           AWS_TERRAFORM_BACKEND_BUCKET_REGION: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_REGION }}
         run: |
-          cd deploy/terraform/aws
+          cd obsrv-automation/terraform/aws
           terragrunt init
           terragrunt apply -replace=module.flink.helm_release.flink \
           -var flink_container_registry=${{ secrets.DOCKERHUB_USERNAME }} \
