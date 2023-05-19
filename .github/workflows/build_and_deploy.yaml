@@ -41,13 +41,28 @@ jobs:
     runs-on: ubuntu-latest
     environment: aws-dev
     steps:
-      - name: Clone the terraform deployment repo
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.1.0
+        with:
+          terragrunt_version: v0.45.8
+      - name: Terragrunt installation
+        run: terragrunt --version
+      
+      - name: Install Terrahelp
+        run: |
+          curl -OL https://github.com/opencredo/terrahelp/releases/download/v0.4.3/terrahelp-linux-amd64
+          sudo mv terrahelp-linux-amd64 /usr/bin/terrahelp
+          chmod +x /usr/bin/terrahelp
+          terrahelp -v
+      - name: Clone the terraform deployment public repo
         uses: actions/checkout@v3
         with:
-          repository: ${{ vars.DEPLOY_REPO }}
+          repository: ${{ vars.DEPLOY_REPO_PUBLIC }}
           path: deploy
           ref: ${{ vars.DEPLOY_REPO_REF }}
-
+    
       - name: Run terraform init and apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
