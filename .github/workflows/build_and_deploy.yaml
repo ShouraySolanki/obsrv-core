@@ -59,8 +59,8 @@ jobs:
       - name: Clone the terraform deployment public repo
         uses: actions/checkout@v3
         with:
-          repository: ${{ vars.DEPLOY_REPO_PUBLIC }}
-          path: obsrv-automation
+          repository: ${{ vars.DEPLOY_REPO }}
+          path: deploy
           ref: ${{ vars.DEPLOY_REPO_REF }}
     
       - name: Run terraform init and apply
@@ -71,7 +71,7 @@ jobs:
           AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
           AWS_TERRAFORM_BACKEND_BUCKET_REGION: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_REGION }}
         run: |
-          cd obsrv-automation/terraform/aws
+          cd deploy/terraform/aws
           terragrunt init
           terragrunt apply -replace=module.flink.helm_release.flink \
           -var flink_container_registry=${{ secrets.DOCKERHUB_USERNAME }} \
