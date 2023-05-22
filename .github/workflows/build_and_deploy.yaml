@@ -64,16 +64,6 @@ jobs:
           path: deploy
           # ref: ${{ vars.DEPLOY_REPO_REF }}
           ref: os-cluster
-      
-      # - name: Clone the terraform deployment private repo
-      #   uses: actions/checkout@v3
-      #   with:
-      #     # repository: ${{ vars.DEPLOY_REPO_PRIVATE }}
-      #     repository: Sanketika-Obsrv/obsrv-automation-ext
-      #     path: obsrv-automation-ext
-      #     token: ${{ secrets.CODE_ACCESS_TOKEN }}
-      #     # ref: ${{ vars.DEPLOY_REPO_REF }}
-      #     ref: add-web-console-env
           
       - name: Fetch and update kubeconfig file
         env:
@@ -90,10 +80,11 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
           AWS_TERRAFORM_BACKEND_BUCKET_REGION: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_REGION }}
+          KUBE_CONFIG_PATH: ~/.kube/config
         run: |
           cd deploy/terraform/aws
           terragrunt init
-          terragrunt apply -auto-approve -replace=module.flink.helm_release.flink \
+          terragrunt apply -replace=module.flink.helm_release.flink \
           -var flink_container_registry=${{ secrets.DOCKERHUB_USERNAME }} \
           -var flink_image_tag=${{ github.ref_name }}
 
