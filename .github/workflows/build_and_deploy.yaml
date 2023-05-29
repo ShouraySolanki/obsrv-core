@@ -59,34 +59,30 @@ jobs:
       - name: Clone the terraform deployment repo
         uses: actions/checkout@v3
         with:
-          # repository: ${{ vars.DEPLOY_REPO_PUBLIC }}
-          # repository: ${{ vars.DEPLOY_REPO }}
-          repository: Sanketika-Obsrv/obsrv-automation
+          repository: ${{ vars.DEPLOY_REPO }}
           path: deploy
-          # ref: ${{ vars.DEPLOY_REPO_REF }}
-          ref: os-cluster
+          ref: ${{ vars.DEPLOY_REPO_REF }}
           
       - name: Fetch and update kubeconfig file
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.AWS_REGION }}
-        run: |
-          ls
-          aws eks --region us-east-2 update-kubeconfig --name obsrv-dev-eks-os 
+        # run: |
+        #   ls
+        #   aws eks --region us-east-2 update-kubeconfig --name obsrv-dev-eks 
       - name: Run terraform init and apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.AWS_REGION }}
-          # AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
-          AWS_TERRAFORM_BACKEND_BUCKET_NAME: obsrv-terraform-state-dev-os
+          AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
           AWS_TERRAFORM_BACKEND_BUCKET_REGION: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_REGION }}
           KUBE_CONFIG_PATH: ~/.kube/config
         run: |
           cd deploy/terraform/aws
           terragrunt init
-          terragrunt apply -auto-approve -replace=module.flink.helm_release.flink \
+          terragrunt apply -replace=module.flink.helm_release.flink \
           -var flink_container_registry=${{ secrets.DOCKERHUB_USERNAME }} \
           -var flink_image_tag=${{ github.ref_name }}
 
