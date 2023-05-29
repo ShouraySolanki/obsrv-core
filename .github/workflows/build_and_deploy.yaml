@@ -1,9 +1,9 @@
 name: Obsrv Core service build and deploy workflow
 run-name: Workflow run for ${{ github.ref }}
 on:
-  push:
-    tags:
-      - '*'
+  push
+    # tags:
+    #   - '*'
 
 jobs:
   check-tag:
@@ -41,8 +41,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: aws-dev
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Setup Terragrunt
         uses: autero1/action-terragrunt@v1.1.0
         with:
