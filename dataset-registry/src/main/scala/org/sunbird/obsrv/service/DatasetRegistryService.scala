@@ -105,7 +105,8 @@ object DatasetRegistryService {
     val postgresConnect = new PostgresConnect(postgresConfig)
     try {
       // TODO: Check if the udpate is successful. Else throw an Exception
-      postgresConnect.executeQuery(s"UPDATE datasources set datasource_ref = '$datasourceRef' where datasource='${datasource.datasource}' and dataset_id='${datasource.datasetId}'")
+      val rowsUpdated  =  postgresConnect.executeUpdate(s"UPDATE datasources set datasource_ref = '$datasourceRef' where datasource='${datasource.datasource}' and dataset_id='${datasource.datasetId}'")
+      if (rowsUpdated > 0) logger.info("Record Updated Successfully") else logger.info("No records found to update")
     } catch {
       case ex: Exception =>
         logger.error("Exception while reading dataset transformations from Postgres", ex)

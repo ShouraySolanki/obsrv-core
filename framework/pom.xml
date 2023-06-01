@@ -89,7 +89,6 @@
             <artifactId>postgresql</artifactId>
             <version>42.6.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_2.12</artifactId>

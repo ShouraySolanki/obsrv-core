@@ -1,5 +1,6 @@
 package org.sunbird.obsrv.core.util
 
+import org.postgresql.Driver
 import org.postgresql.ds.PGSimpleDataSource
 import org.slf4j.LoggerFactory
 
@@ -58,6 +59,8 @@ class PostgresConnect(config: PostgresConnectionConfig) {
   }
 
   def executeQuery(query:String):ResultSet = statement.executeQuery(query)
+
+  def executeUpdate(query: String): Int = statement.executeUpdate(query)
 }
 
 
