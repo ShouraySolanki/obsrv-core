@@ -73,12 +73,29 @@ jobs:
     runs-on: ubuntu-latest
     environment: aws-dev
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.1.0
+        with:
+          terragrunt_version: v0.45.8
+      - name: Terragrunt installation
+        run: terragrunt --version
+
       - name: Clone the terraform deployment repo
         uses: actions/checkout@v3
         with:
           repository: ${{ vars.DEPLOY_REPO }}
           path: deploy
           ref: ${{ vars.DEPLOY_REPO_REF }}
+      
+      - name: Fetch and update kubeconfig file
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: |
+          aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name obsrv-dev-eks
 
       - name: Run terraform init and apply
         env:
