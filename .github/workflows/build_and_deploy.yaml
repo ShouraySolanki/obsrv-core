@@ -23,7 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Maven Build
-        run: mvn clean install
+        run: |
+          ls -lrt
+          mvn clean install
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
