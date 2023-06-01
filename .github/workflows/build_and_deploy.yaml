@@ -58,7 +58,7 @@ jobs:
           target: merged-image
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/merged-pipeline:${{ github.ref_name }}
-          
+
       - name: Build ${{matrix.image}} image and push
         uses: docker/build-push-action@v4
         with:
@@ -69,7 +69,7 @@ jobs:
 
   aws-deploy:
     needs: [check-tag, docker-build]
-    if: needs.check-tag.outputs.ALLOWED_TAG ==  'True' && vars.CLOUD_PROVIDER == 'aws'
+    if: needs.check-tag.outputs.ALLOWED_TAG ==  'True'
     runs-on: ubuntu-latest
     environment: aws-dev
     steps:
@@ -90,7 +90,7 @@ jobs:
         run: |
           cd deploy/terraform/aws
           terragrunt init
-          terragrunt apply -auto-approve -replace=module.flink.helm_release.flink \
+          terragrunt apply -replace=module.flink.helm_release.flink \
           -var flink_container_registry=${{ secrets.DOCKERHUB_USERNAME }} \
           -var flink_image_tag=${{ github.ref_name }}
 
