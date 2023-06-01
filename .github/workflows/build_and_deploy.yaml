@@ -104,6 +104,7 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
           AWS_TERRAFORM_BACKEND_BUCKET_REGION: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_REGION }}
+          KUBE_CONFIG_PATH: ~/.kube/config
         run: |
           cd deploy/terraform/aws
           terragrunt init
