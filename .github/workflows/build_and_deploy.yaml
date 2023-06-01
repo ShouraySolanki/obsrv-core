@@ -23,6 +23,9 @@ jobs:
 #     if: needs.check-tag.outputs.ALLOWED_TAG ==  'True'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Maven Build
         run: |
           ls -lrt
