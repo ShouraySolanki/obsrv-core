@@ -130,7 +130,7 @@ object MasterDataProcessorIndexer {
     storageService.upload(config.getString("cloudStorage.container"), outputFilePath + "/part-00000", objectKey, isDirectory = Option(false))
   }
 
-  def cleanDirectory(dir: String): Unit = {
+  private def cleanDirectory(dir: String): Unit = {
     if (java.nio.file.Files.exists(java.nio.file.Paths.get(dir))) {
       val directoryPath: java.nio.file.Path = java.nio.file.Paths.get(dir)
       java.nio.file.Files.walk(directoryPath)
