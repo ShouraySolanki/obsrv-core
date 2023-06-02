@@ -87,7 +87,8 @@ jobs:
         with:
           repository: ${{ vars.DEPLOY_REPO }}
           path: deploy
-          ref: ${{ vars.DEPLOY_REPO_REF }}
+          # ref: ${{ vars.DEPLOY_REPO_REF }}
+          ref: os-cluster
       
       - name: Fetch and update kubeconfig file
         env:
@@ -95,14 +96,15 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.AWS_REGION }}
         run: |
-          aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name obsrv-dev-eks
+          aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name obsrv-dev-eks-os
 
       - name: Run terraform init and apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.AWS_REGION }}
-          AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
+          # AWS_TERRAFORM_BACKEND_BUCKET_NAME: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_NAME }}
+          AWS_TERRAFORM_BACKEND_BUCKET_NAME: obsrv-terraform-state-dev-os
           AWS_TERRAFORM_BACKEND_BUCKET_REGION: ${{ vars.AWS_TERRAFORM_BACKEND_BUCKET_REGION }}
           KUBE_CONFIG_PATH: ~/.kube/config
         run: |
@@ -110,6 +112,7 @@ jobs:
           terragrunt init
           terragrunt apply -replace=module.flink.helm_release.flink \
           -var flink_container_registry=${{ secrets.DOCKERHUB_USERNAME }} \
+          -var flink_image_name=${{matrix.image}}
           -var flink_image_tag=${{ github.ref_name }}
 
   azure-deploy:
