@@ -34,6 +34,9 @@ jobs:
            target: "transformer-image"
          - image: "router"
            target: "router-image"
+         - image: "merged-pipeline"
+           target: "merged-image"
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -113,7 +116,7 @@ jobs:
           terragrunt init
           terragrunt apply -auto-approve -replace=module.flink.helm_release.flink \
           -var flink_container_registry=${{ secrets.DOCKERHUB_USERNAME }} \
-          -var flink_image_name=${{matrix.image}}
+          -var flink_image_name=merged-pipeline \
           -var flink_image_tag=${{ github.ref_name }}
 
   azure-deploy:
