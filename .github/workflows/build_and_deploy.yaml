@@ -85,7 +85,8 @@ jobs:
       - name: Clone the terraform deployment repo
         uses: actions/checkout@v3
         with:
-          repository: ${{ vars.DEPLOY_REPO }}
+          # repository: ${{ vars.DEPLOY_REPO }}
+          repository: Sanketika-Obsrv/obsrv-automation
           path: deploy
           # ref: ${{ vars.DEPLOY_REPO_REF }}
           ref: os-cluster
