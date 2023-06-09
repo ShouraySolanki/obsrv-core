@@ -1,9 +1,9 @@
 name: Obsrv Core service build and deploy workflow
 run-name: Workflow run for ${{ github.ref }}
 on:
-  push
-    # tags:
-    #  - '*'
+  push:
+    tags:
+     - '*'
 
 jobs:
   check-tag:
@@ -59,41 +59,41 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: Build merged-pipeline image and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     platforms: linux/amd64
-      #     target: merged-image
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/merged-pipeline:${{ github.ref_name }}
+      - name: Build merged-pipeline image and push
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64
+          target: merged-image
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/merged-pipeline:${{ github.ref_name }}
       
-      # - name: Build merged-pipeline image and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     platforms: linux/amd64
-      #     target: master-data-processor-image
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/master-data-processor:${{ github.ref_name }}
+      - name: Build merged-pipeline image and push
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64
+          target: master-data-processor-image
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/master-data-processor:${{ github.ref_name }}
       
-      # - name: Build merged-pipeline image and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     platforms: linux/amd64
-      #     target: kafka-connector-image
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/kafka-connector:${{ github.ref_name }}
+      - name: Build merged-pipeline image and push
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64
+          target: kafka-connector-image
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/kafka-connector:${{ github.ref_name }}
 
-      # - name: Build ${{matrix.image}} image and push
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     platforms: linux/amd64
-      #     target: ${{matrix.target}}
-      #     push: true
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.image}}:${{ github.ref_name }}
+      - name: Build ${{matrix.image}} image and push
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/amd64
+          target: ${{matrix.target}}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{matrix.image}}:${{ github.ref_name }}
 
   aws-deploy:
-    # needs: [check-tag, docker-build]
-    # if: needs.check-tag.outputs.ALLOWED_TAG ==  'True'
+    needs: [check-tag, docker-build]
+    if: needs.check-tag.outputs.ALLOWED_TAG ==  'True'
     runs-on: ubuntu-latest
     environment: aws-dev
     steps:
@@ -132,7 +132,7 @@ jobs:
         run: |
           cd deploy/terraform/aws
           terragrunt init
-          terragrunt apply  -var merged_pipeline_enabled=true --replace='module.flink.helm_release.flink' \
+          terragrunt apply  -var merged_pipeline_enabled={{ vars.MERGED_PIPELINE }} --replace='module.flink.helm_release.flink' \
           -var flink_image_tag=${{ github.ref_name }}
 
   azure-deploy:
