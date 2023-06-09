@@ -133,7 +133,7 @@ jobs:
           cd deploy/terraform/aws
           terragrunt init
           terragrunt apply  -var merged_pipeline_enabled=true --replace='module.flink.helm_release.flink' \
-          -var flink_image_tag=release-0.5.0_RC22
+          -var flink_image_tag=${{ github.ref_name }}
 
   azure-deploy:
     needs: [check-tag, docker-build]
