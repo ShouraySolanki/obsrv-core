@@ -132,7 +132,7 @@ jobs:
         run: |
           cd deploy/terraform/aws
           terragrunt init
-          terragrunt apply -auto-approve -var merged_pipeline_enabled={{ vars.MERGED_PIPELINE }} --replace='module.flink.helm_release.flink' \
+          terragrunt apply -auto-approve -var merged_pipeline_enabled={{ vars.MERGED_PIPELINE || 'true' }} --replace='module.flink.helm_release.flink' \
           -var flink_image_tag=${{ github.ref_name }}
 
   azure-deploy:
