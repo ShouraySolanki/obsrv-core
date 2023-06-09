@@ -132,8 +132,7 @@ jobs:
         run: |
           cd deploy/terraform/aws
           terragrunt init
-          terragrunt apply  --replace='module.flink.helm_release.flink["${{matrix.image}}"]' \
-          -var 'flink_image_map={${{matrix.image}}="${{matrix.image}}"}' \
+          terragrunt apply  -var merged_pipeline_enabled=true --replace='module.flink.helm_release.flink' \
           -var flink_image_tag=${{ github.ref_name }}
 
   azure-deploy:
