@@ -7,13 +7,19 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.json4s.native.JsonMethods._
-import org.sunbird.cloud.storage.factory.{StorageConfig, StorageServiceFactory}
 import org.sunbird.obsrv.core.util.JSONUtil
 import org.sunbird.obsrv.model.DatasetModels.{DataSource, Dataset}
 import org.sunbird.obsrv.registry.DatasetRegistry
 
 import java.io.File
 import scala.collection.mutable
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
+import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.{PutObjectRequest, PutObjectResponse}
+
+import scala.util.{Failure, Success, Try}
 
 object MasterDataProcessorIndexer {
 
@@ -88,6 +94,29 @@ object MasterDataProcessorIndexer {
     }
   }
 
+  private def upload(cloudProvider: String) = {
+    cloudProvider match {
+      case "aws" =>
+        (bucketName: String, key: String, payload: String) => {
+
+          val s3Client = S3Client.builder()
+            .region(Region.US_EAST_2)
+            .credentialsProvider(DefaultCredentialsProvider.create())
+            .build()
+
+          val request = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(key)
+            .contentType("application/json")
+            .build()
+
+          val jsonPayload = RequestBody.fromString(payload)
+          s3Client.putObject(request, jsonPayload)
+        }
+      case _ => throw new Exception("Unsupported provider")
+    }
+  }
+
   private def submitIngestionTask(ingestionSpec: String) = {
     // TODO: Handle success and failure responses properly
     val response = Unirest.post(config.getString("druid.indexer.url"))
@@ -108,11 +137,10 @@ object MasterDataProcessorIndexer {
     response.ifFailure(response => throw new Exception("Exception while deleting datasource" + datasourceRef))
   }
 
-  private def createDataFile(dataset: Dataset, timestamp: Long, outputFilePath: String, objectKey: String): String = {
+  private def createDataFile(dataset: Dataset, timestamp: Long, outputFilePath: String, objectKey: String) = {
     cleanDirectory(outputFilePath)
     val conf = new SparkConf()
       .setAppName("MasterDataProcessorIndexer")
-      .setMaster("local[4]")
       .set("spark.redis.host", dataset.datasetConfig.redisDBHost.get)
       .set("spark.redis.port", String.valueOf(dataset.datasetConfig.redisDBPort.get))
       .set("spark.redis.db", String.valueOf(dataset.datasetConfig.redisDB.get))
@@ -122,12 +150,14 @@ object MasterDataProcessorIndexer {
       .map(f => {
         val json = JSONUtil.deserialize[mutable.Map[String, AnyRef]](f._2)
         json("syncts") = timestamp.asInstanceOf[AnyRef]
-        JSONUtil.serialize(json)
+        json
       }).coalesce(1)
-    rdd.saveAsTextFile(outputFilePath)
+
+    val response = rdd.collect()
+    val stringifiedResponse = JSONUtil.serialize(response);
+    println(stringifiedResponse)
     sc.stop()
-    val storageService = StorageServiceFactory.getStorageService(StorageConfig(config.getString("cloudStorage.provider"), config.getString("cloudStorage.accountName"), config.getString("cloudStorage.accountKey")))
-    storageService.upload(config.getString("cloudStorage.container"), outputFilePath + "/part-00000", objectKey, isDirectory = Option(false))
+    upload(config.getString("cloudStorage.provider"))(config.getString("cloudStorage.container"), objectKey, stringifiedResponse)
   }
 
   private def cleanDirectory(dir: String): Unit = {
@@ -142,5 +172,4 @@ object MasterDataProcessorIndexer {
       println("Path doesn't exists" + dir)
     }
   }
-
 }

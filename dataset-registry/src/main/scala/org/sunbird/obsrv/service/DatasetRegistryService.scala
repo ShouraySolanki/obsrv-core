@@ -13,7 +13,7 @@ object DatasetRegistryService {
 
   private[this] val logger = LoggerFactory.getLogger(DatasetRegistryService.getClass)
 
-  private val configFile = new File("/data/flink/conf/baseconfig.conf")
+  private val configFile = new File("/opt/bitnami/spark/conf/data-product.conf")
   val config: Config = if (configFile.exists()) {
     println("Loading configuration file cluster baseconfig.conf...")
     ConfigFactory.parseFile(configFile).resolve()
@@ -21,6 +21,7 @@ object DatasetRegistryService {
     println("Loading configuration file baseconfig.conf inside the jar...")
     ConfigFactory.load("baseconfig.conf").withFallback(ConfigFactory.systemEnvironment())
   }
+
   private val postgresConfig = PostgresConnectionConfig(
     config.getString("postgres.user"),
     config.getString("postgres.password"),
