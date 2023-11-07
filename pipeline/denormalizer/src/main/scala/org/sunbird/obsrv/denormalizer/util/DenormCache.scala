@@ -73,10 +73,7 @@ class DenormCache(val config: DenormalizerConfig) {
   private def getFromCache(pipeline: Pipeline, fieldConfig: DenormFieldConfig, eventStr: String): Response[String] = {
     pipeline.select(fieldConfig.redisDB)
     val denormFieldNode = JSONUtil.getKey(fieldConfig.denormKey, eventStr)
-    if (denormFieldNode.isMissingNode) {
-      throw new ObsrvException(ErrorConstants.DENORM_KEY_MISSING)
-    }
-    if (!denormFieldNode.isTextual) {
+    if (!denormFieldNode.isMissingNode && !denormFieldNode.isTextual) {
       throw new ObsrvException(ErrorConstants.DENORM_KEY_NOT_A_STRING)
     }
     val denormField = denormFieldNode.asText()
